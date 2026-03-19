@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Sky Engineering{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sky+Text:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── CSS Variables ─── */
+    :root {
+      --sky-blue: #0072c9;
+      --sky-blue-dark: #005ca3;
+      --sky-blue-light: #e8f3fc;
+      --sky-pink: #e91e8c;
+      --sky-pink-light: #fce4f3;
+      --sky-white: #ffffff;
+      --sky-off-white: #f5f7fa;
+      --sky-grey: #6b7280;
+      --sky-grey-light: #e5e7eb;
+      --sky-dark: #111827;
+      --sky-text: #1f2937;
+      --nav-height: 56px;
+      --card-radius: 12px;
+      --input-radius: 6px;
+      --transition: 0.2s ease;
+      --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+      --shadow-btn: 0 2px 8px rgba(0, 114, 201, 0.35);
+      --font: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    /* ─── Reset ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font);
+      background: var(--sky-off-white);
+      color: var(--sky-text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    a { color: var(--sky-blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ─── Top Navigation ─── */
+    .sky-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--nav-height);
+      background: var(--sky-white);
+      border-bottom: 1px solid var(--sky-grey-light);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 24px;
+    }
+
+    .sky-nav__logo {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    /* Sky wordmark pill */
+    .sky-logo-pill {
+      background: var(--sky-blue);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      padding: 4px 12px;
+      border-radius: 4px;
+      line-height: 1.2;
+    }
+
+    .sky-nav__spacer { flex: 1; }
+
+    .sky-nav__links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .sky-nav__links a {
+      color: var(--sky-text);
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    .sky-nav__links a:hover { color: var(--sky-blue); }
+
+    .sky-nav__links .nav-signin {
+      color: var(--sky-blue);
+      font-weight: 600;
+    }
+
+    /* Mobile hamburger (shown on small screens) */
+    .sky-nav__hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .sky-nav__hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--sky-dark);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+
+    @media (max-width: 600px) {
+      .sky-nav__links { display: none; }
+      .sky-nav__hamburger { display: flex; }
+    }
+
+    /* ─── Page wrapper ─── */
+    .sky-page {
+      min-height: calc(100vh - var(--nav-height));
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Main content slot ─── */
+    .sky-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Footer ─── */
+    .sky-footer {
+      background: var(--sky-white);
+      border-top: 1px solid var(--sky-grey-light);
+      padding: 16px 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--sky-grey);
+    }
+
+    /* ─── Utility card ─── */
+    .sky-card {
+      background: var(--sky-white);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow-card);
+      padding: 32px;
+    }
+
+    /* ─── Utility button ─── */
+    .sky-btn {
+      display: inline-block;
+      padding: 10px 24px;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background var(--transition), box-shadow var(--transition), transform 0.1s;
+      text-align: center;
+    }
+    .sky-btn:active { transform: scale(0.98); }
+
+    .sky-btn--primary {
+      background: var(--sky-blue);
+      color: #fff;
+      box-shadow: var(--shadow-btn);
+    }
+    .sky-btn--primary:hover { background: var(--sky-blue-dark); }
+
+    .sky-btn--full { width: 100%; }
+
+    /* ─── Utility input ─── */
+    .sky-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--sky-grey-light);
+      border-radius: var(--input-radius);
+      font-size: 14px;
+      color: var(--sky-text);
+      background: var(--sky-white);
+      transition: border-color var(--transition), box-shadow var(--transition);
+      outline: none;
+    }
+    .sky-input::placeholder { color: #9ca3af; }
+    .sky-input:focus {
+      border-color: var(--sky-blue);
+      box-shadow: 0 0 0 3px rgba(0, 114, 201, 0.12);
+    }
+
+    /* ─── Form group ─── */
+    .form-group { margin-bottom: 14px; }
+
+    /* ─── Alert / error ─── */
+    .sky-alert {
+      padding: 10px 14px;
+      border-radius: var(--input-radius);
+      font-size: 13px;
+      margin-top: 12px;
+    }
+    .sky-alert--error {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- ─── Navigation ─── -->
+  <nav class="sky-nav">
+    <a href="/" class="sky-nav__logo" aria-label="Sky home">
+      <span class="sky-logo-pill">sky</span>
+    </a>
+    <div class="sky-nav__spacer"></div>
+    <ul class="sky-nav__links">
+      <li><a href="/help/">Help</a></li>
+      <li><a href="/contact/">Contact Support</a></li>
+      <li><a href="/login/" class="nav-signin">Sign in</a></li>
+    </ul>
+    <!-- Mobile only -->
+    <button class="sky-nav__hamburger" aria-label="Open menu" onclick="this.classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ─── Page content ─── -->
+  <div class="sky-page">
+    <main class="sky-main">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="sky-footer">
+      &copy; {% now "Y" %} Sky UK Limited. All rights reserved.
+    </footer>
+  </div>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
