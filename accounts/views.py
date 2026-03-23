@@ -21,7 +21,7 @@ def login_view(request):
         try:
             user = TblUser.objects.get(email=email, password=password)
             request.session['user_id'] = user.id
-            return redirect('home')  # Redirect to main page after login
+            return redirect('dashboard_home')  # Redirect to dashboard_home after login
         except TblUser.DoesNotExist:
             error = "Invalid credentials"
     return render(request, 'accounts/login.html', {'error': error})
