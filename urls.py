@@ -3,6 +3,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('dashboard.urls')),  # Root points to dashboard
+    path('dashboard/', include('dashboard.urls')),  # Root points to dashboard
     path('accounts/', include('accounts.urls')),  # Login/signup under /accounts/
 ]
