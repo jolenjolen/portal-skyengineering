@@ -19,17 +19,17 @@
             <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="collapsibleNavbar">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                <a class="nav-link" href="#">Help</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link" href="#">Contact&nbsp;Support</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link" href="#">Sign&nbsp;In</a>
-                </li>    
-            </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'help' %}">Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'contact' %}">Contact&nbsp;Support</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Sign&nbsp;In</a>
+                    </li>    
+                </ul>
             </div>
         </div>
     </nav>
