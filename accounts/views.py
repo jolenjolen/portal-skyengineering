@@ -42,4 +42,4 @@ def signup_view(request):
     return render(request, 'accounts/signup.html', {'error': error})
 
 def template_view(request):
-    return render(request, 'template.html')
+    return render(request, 'accounts/template.html')
