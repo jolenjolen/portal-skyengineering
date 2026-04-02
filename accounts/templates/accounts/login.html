@@ -1,210 +1,97 @@
-{% extends "accounts/base.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKY Engineering - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="{% static 'accounts/css/styles.css' %}">
+</head>
+<body >
+    <nav class="navbar navbar-expand-sm navbar-light sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'media/logo.png' %}" alt="Logo" height="40">
+            </a>
+            <button class="navbar-toggler hamburger-menu" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+                <span class="icon-wrapper">
+                    <span id="iconMenu" class="material-symbols-rounded icon active">menu</span>
+                    <span id="iconClose" class="material-symbols-rounded icon">close</span>
+                </span>
+            </button>
+            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                <ul class="navbar-nav ms-auto text-center">
+                    <hr>
+                    <li class="nav-item">
+                    <a class="nav-link roboto-nav-link" href="#">Help</a>
+                    </li>
+                    <hr>
+                    <li class="nav-item">
+                    <a class="nav-link roboto-nav-link" href="#">Contact&nbsp;Support</a>
+                    </li>
+                    <hr>
+                    <li class="nav-item">
+                    <a class="nav-link roboto-nav-link active-link" href="#">Sign&nbsp;In</a>
+                    </li>   
+                    <br> 
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-{% block title %}Sign In — Sky Engineering{% endblock %}
-
-{% block extra_css %}
-<style>
-  /* ─── Login page layout ─── */
-  .login-page {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 16px;
-    position: relative;
-    overflow: hidden;
-    min-height: calc(100vh - var(--nav-height) - 49px);
-  }
-
-  /* Decorative ink-splash blobs (matches the pink watercolour in the mockup) */
-  .login-page::before,
-  .login-page::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(60px);
-    pointer-events: none;
-    z-index: 0;
-  }
-  .login-page::before {
-    width: 340px;
-    height: 260px;
-    background: radial-gradient(ellipse, rgba(233,30,140,0.18) 0%, transparent 70%);
-    bottom: 60px;
-    left: 50%;
-    transform: translateX(-60%);
-  }
-  .login-page::after {
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(ellipse, rgba(233,30,140,0.10) 0%, transparent 70%);
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-10%);
-  }
-
-  /* ─── Card ─── */
-  .login-card {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 360px;
-    background: var(--sky-white);
-    border-radius: var(--card-radius);
-    box-shadow: var(--shadow-card);
-    padding: 36px 32px 28px;
-    animation: cardIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  @keyframes cardIn {
-    from { opacity: 0; transform: translateY(18px) scale(0.98); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  /* ─── Brand block inside card ─── */
-  .login-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 28px;
-    justify-content: center;
-  }
-
-  .login-brand .sky-logo-pill {
-    font-size: 22px;
-    padding: 5px 14px;
-  }
-
-  .login-brand__divider {
-    width: 1px;
-    height: 36px;
-    background: var(--sky-grey-light);
-  }
-
-  .login-brand__label {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--sky-grey);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    line-height: 1.3;
-  }
-
-  .login-brand__label strong {
-    display: block;
-    color: var(--sky-blue);
-    font-size: 13px;
-    letter-spacing: 0.02em;
-    text-transform: none;
-  }
-
-  /* ─── Form ─── */
-  .login-form { display: flex; flex-direction: column; gap: 0; }
-
-  .login-form .form-group { margin-bottom: 12px; }
-
-  /* Forgot password link */
-  .login-forgot {
-    display: block;
-    font-size: 12px;
-    color: var(--sky-blue);
-    margin-bottom: 16px;
-    text-align: left;
-    text-decoration: none;
-  }
-  .login-forgot:hover { text-decoration: underline; }
-
-  /* Login button */
-  .login-form .sky-btn--primary {
-    width: 100%;
-    padding: 11px;
-    font-size: 15px;
-    border-radius: 24px;
-    letter-spacing: 0.01em;
-  }
-
-  /* Register link row */
-  .login-register {
-    margin-top: 16px;
-    font-size: 12.5px;
-    color: var(--sky-grey);
-    text-align: center;
-  }
-  .login-register a {
-    color: var(--sky-pink);
-    font-weight: 600;
-  }
-  .login-register a:hover { text-decoration: underline; }
-
-  /* Error message */
-  .login-error {
-    font-size: 13px;
-    color: #dc2626;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-radius: var(--input-radius);
-    padding: 9px 12px;
-    margin-top: 12px;
-    text-align: center;
-  }
-</style>
-{% endblock %}
-
-{% block content %}
-<section class="login-page">
-  <div class="login-card">
-
-    <!-- Brand -->
-    <div class="login-brand">
-      <span class="sky-logo-pill">sky</span>
-      <div class="login-brand__divider"></div>
-      <div class="login-brand__label">
-        ENGINEERING
-        <strong>PORTAL</strong>
-      </div>
+    <div class="main m-2 p-2 rounded-4 border d-flex justify-content-center align-items-center">
+        <form action="" method="post" class="shadow border rounded-4 m-2 p-2 text-center" style="width: 450px;">
+            {% csrf_token %}
+            
+            <img src="{% static 'media/sky-engineering.png' %}" alt="" style="max-width: 250px; filter: grayscale(100%);" class="m-2">
+            
+            <div class="m-3">
+                <input type="text" name="username" maxlength="150" autofocus required id="id_username" class="form-control" placeholder="Username">
+            </div>
+            <div class="m-3">
+                <input type="password" name="password" required id="id_password" class="form-control" placeholder="Password">
+            </div>
+            <div class="container text-start p-3">
+                <p class="m-1 w-100 "><a href="#" class="text-decoration-none roboto-nav-link form-link">Forgot Password?</a></p>
+                <button type="submit" class="btn btn-primary w-100 my-3 roboto-nav-link">Login</button>
+                <p class="m-1 w-100 ">Don't Have an Account? <a href="#" class="text-decoration-none roboto-nav-link form-link">Register</a></p>
+            </div>
+            
+        </form>
     </div>
 
-    <!-- Login form -->
-    <form class="login-form" method="post" novalidate>
-      {% csrf_token %}
+    <footer class="bg-white text-muted mt-2 border-top">
+        <br>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p>&copy; 2024 SKY Engineering. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="#" class="text-decoration-none me-3 roboto-nav-link">Privacy&nbsp;Policy</a>
+                    <a href="#" class="text-decoration-none me-3 roboto-nav-link">Terms&nbsp;of&nbsp;Service</a>
+                </div>
+            </div>
+    </footer>
 
-      <div class="form-group">
-        <input
-          class="sky-input"
-          type="email"
-          name="email"
-          id="id_email"
-          placeholder="Email"
-          autocomplete="email"
-          required
-        />
-      </div>
 
-      <div class="form-group">
-        <input
-          class="sky-input"
-          type="password"
-          name="password"
-          id="id_password"
-          placeholder="Password"
-          autocomplete="current-password"
-          required
-        />
-      </div>
+    <script>
+        const navbar = document.getElementById('collapsibleNavbar');
+        const menuIcon = document.getElementById('iconMenu');
+        const closeIcon = document.getElementById('iconClose');
 
-      <a href="" class="login-forgot">Forgot Password?</a>
+        navbar.addEventListener('show.bs.collapse', () => {
+            menuIcon.classList.remove('active');
+            closeIcon.classList.add('active');
+        });
 
-      <button class="sky-btn sky-btn--primary" type="submit">Login</button>
-    </form>
-
-    {% if error %}
-      <p class="login-error">{{ error }}</p>
-    {% endif %}
-
-    <p class="login-register">
-      Don't Have an account? <a href="">Register Here</a>
-    </p>
-
-  </div>
-</section>
-{% endblock %}
+        navbar.addEventListener('hide.bs.collapse', () => {
+            closeIcon.classList.remove('active');
+            menuIcon.classList.add('active');
+        });
+    </script>
+</body>
+</html>
