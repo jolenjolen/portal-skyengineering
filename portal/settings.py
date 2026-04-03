@@ -82,6 +82,11 @@ DATABASES = {
     }
 }
 
+# Session configuration
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 60 * 60 * 24  # 1 day fallback, in case browser doesn't close cleanly
+SESSION_COOKIE_HTTPONLY = True      # prevents JS from accessing the cookie
+SESSION_COOKIE_SAMESITE = 'Lax'    # CSRF protection
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators

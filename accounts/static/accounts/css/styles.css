@@ -15,7 +15,7 @@
   background-size: fixed; /* or whatever you want */
   background-position: center;
   background-repeat: repeat;
-  height: 75vh;
+  height: 80vh;
   background-image: 
     linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url("/static/media/bg.png");
 
@@ -58,6 +58,7 @@
     outline: none;
     box-shadow: none;
 }
+
 
 .hamburger-menu {
     border: none;
@@ -123,7 +124,8 @@ footer a:hover {
 }
 
 form{
-    background-color: rgba(255, 255, 255, 0.75);
+    background-color: rgba(255, 255, 255, 0.60);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
 }
+
