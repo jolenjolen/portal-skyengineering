@@ -12,7 +12,7 @@
 </head>
 <body >
     <nav class="navbar navbar-expand-sm navbar-light sticky-top">
-        <div class="container-fluid">
+        <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}">
                 <img src="{% static 'media/logo.png' %}" alt="Logo" height="40">
             </a>
@@ -25,16 +25,16 @@
             <div class="collapse navbar-collapse" id="collapsibleNavbar">
                 <ul class="navbar-nav ms-auto text-center">
                     <hr>
-                    <li class="nav-item">
-                    <a class="nav-link roboto-nav-link" href="#">Help</a>
+                    <li class="nav-item mx-2">
+                    <a class="nav-link roboto-nav-link" href="{% url 'help' %}">Help</a>
                     </li>
                     <hr>
-                    <li class="nav-item">
-                    <a class="nav-link roboto-nav-link" href="#">Contact&nbsp;Support</a>
+                    <li class="nav-item mx-2">
+                    <a class="nav-link roboto-nav-link" href="{% url 'contact' %}">Contact&nbsp;Support</a>
                     </li>
                     <hr>
-                    <li class="nav-item">
-                    <a class="nav-link roboto-nav-link active-link" href="#">Sign&nbsp;In</a>
+                    <li class="nav-item mx-2">
+                    <a class="nav-link roboto-nav-link active-link" href="{% url 'login' %}">Sign&nbsp;In</a>
                     </li>   
                     <br> 
                 </ul>
@@ -49,30 +49,34 @@
             <img src="{% static 'media/sky-engineering.png' %}" alt="" style="max-width: 250px; filter: grayscale(100%);" class="m-2">
             
             <div class="m-3">
-                <input type="text" name="username" maxlength="150" autofocus required id="id_username" class="form-control" placeholder="Username">
+                <input type="text" name="username" maxlength="150" autofocus required id="id_username" class="form-control rounded-pill p-3" placeholder="Username">
             </div>
             <div class="m-3">
-                <input type="password" name="password" required id="id_password" class="form-control" placeholder="Password">
+                <input type="password" name="password" required id="id_password" class="form-control rounded-pill p-3" placeholder="Password">
             </div>
             <div class="container text-start p-3">
-                <p class="m-1 w-100 "><a href="#" class="text-decoration-none roboto-nav-link form-link">Forgot Password?</a></p>
-                <button type="submit" class="btn btn-primary w-100 my-3 roboto-nav-link">Login</button>
-                <p class="m-1 w-100 ">Don't Have an Account? <a href="#" class="text-decoration-none roboto-nav-link form-link">Register</a></p>
+                <p class="m-1 w-100 "><a href="{% url 'password_reset' %}" class="text-decoration-none roboto-nav-link form-link">Forgot Password?</a></p>
+                <button type="submit" class="btn btn-outline-dark w-100 my-3 roboto-nav-link rounded-pill p-3 shadow-sm">Login</button>
+                <p class="m-1 w-100 ">Don't Have an Account? <a href="{% url 'signup' %}" class="text-decoration-none roboto-nav-link form-link">Register</a></p>
             </div>
-            
+            {% if error %}
+                <div class="alert alert-danger rounded-pill mx-3" role="alert">
+                    {{ error }}
+                </div>
+            {% endif %}
         </form>
     </div>
 
     <footer class="bg-white text-muted mt-2 border-top">
         <br>
-        <div class="container-fluid">
+        <div class="container">
             <div class="row">
                 <div class="col-md-6 text-center text-md-start">
                     <p>&copy; 2024 SKY Engineering. All rights reserved.</p>
                 </div>
                 <div class="col-md-6 text-center text-md-end">
-                    <a href="#" class="text-decoration-none me-3 roboto-nav-link">Privacy&nbsp;Policy</a>
-                    <a href="#" class="text-decoration-none me-3 roboto-nav-link">Terms&nbsp;of&nbsp;Service</a>
+                    <a href="{% url 'pp' %}" class="text-decoration-none me-3 roboto-nav-link">Privacy&nbsp;Policy</a>
+                    <a href="{% url 'tos' %}" class="text-decoration-none me-3 roboto-nav-link">Terms&nbsp;of&nbsp;Service</a>
                 </div>
             </div>
     </footer>
