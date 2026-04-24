@@ -1,4 +1,6 @@
+import csv
 from django.shortcuts import render
+from django.http import HttpResponse
 from core.models import TblTeam, TblDepartment, TblProject
 
 def reports_dashboard(request):
@@ -23,3 +25,8 @@ def reports_dashboard(request):
     }
 
     return render(request, "reports/dashboard.html",context)
+
+#def export_team_report_csv(request):
+    #downloads team report with team summary
+  #  response = HttpResponse(content_type="text/csv")
+    #response[]
