@@ -1,0 +1,120 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reports - Sky Engineering</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-light">
+    <!--Navigation bar-->
+    <nav class="navbar bg-white border-bottom">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">
+          <img src="{% static 'media/logo.png' %}" alt="SKY LOGO" height="40" />
+        </a>
+        <span class="fw-semibold text-primary">Engineering portal</span>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <!--Side Navigation bar-->
+        <aside class="col-md-2 min-vh-100 bg-white border-end p-4">
+          <h5 class="mb-4">Menu</h5>
+
+          <ul class="nav flex-clumn gap-2">
+            <li class="nav-item">
+              <a href="{% url 'home' %}" class="nav-link">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">Teams</a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">Departments</a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">Organisation</a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="{% url 'reports_dashboard' %}"
+                class="nav-link active fw-bold text-danger"
+                >Reports</a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="" class="nav-link">Profile</a>
+            </li>
+          </ul>
+        </aside>
+
+        <!--Reports-->
+        <main class="col-md-10 p5">
+          <h1>Reports Dashboard</h1>
+
+          <!--Summary cards-->
+          <div class="row g-4 mb-5">
+            <div class="col-md-4">
+              <div class="card shadow-sm border-0">
+                <div class="card-body">
+                  <h5 class="card-title">Total Teams</h5>
+                  <p class="display-5 fw-bold">{{ total_teams }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card shadow-sm border-0">
+                <div class="card-body">
+                  <h5 class="card-title">Total Departments</h5>
+                  <p class="display-5 fw-bold">{{ total_departments }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card shadow-sm border-0">
+                <div class="card-body">
+                  <h5 class="card-title">Total Projects</h5>
+                  <p class="display-5 fw-bold">{{ total_projects }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--Teams without a leader reports-->
+          <section class="card shadow-sm border-0">
+            <div class="card-body">
+              <h2 class="h4 mb-3">Teams without a Leader</h2>
+
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Team Name</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {% for team in teams_no_leader %}
+                  <tr>
+                    <td>{{ team.name }}</td>
+                    <td>No team leader assigned</td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="2">All teams currently have a leader</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
