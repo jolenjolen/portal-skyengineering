@@ -165,3 +165,6 @@ def export_team_report_csv(request):
         ])
 
     return csv_response
+
+def visualisations_view(request):
+    return render(request,"reports/visualisations.html")
