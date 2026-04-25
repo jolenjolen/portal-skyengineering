@@ -17,7 +17,14 @@
         <a class="navbar-brand" href="{% url 'home' %}">
           <img src="{% static 'media/logo.png' %}" alt="SKY LOGO" height="40" />
         </a>
-        <span class="fw-semibold text-primary">Engineering portal</span>
+        <div class="d-flex align-items-center gap-3">
+          <span class="fw-semibold text-primary">Engineering portal</span>
+
+          <form action="{% url 'logout' %}" method="post" class="m-0" >
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+          </form>
+        </div>
       </div>
     </nav>
 
@@ -133,7 +140,7 @@
                     <th>Number of teams</th>
                   </tr>
                 </thead>
-                <body>
+                <tbody>
                   {% for department in department_report %}
                   <tr>
                     <td>{{ department.department }}</td>
@@ -144,7 +151,7 @@
                     <td colspan="2">No department data available.</td>
                   </tr>
                   {% endfor %}
-                </body>
+                </tbody>
               </table>
             </div>
           </section>
@@ -176,7 +183,6 @@
                       {% endfor %}
                     </td>
                     <td>{{ team.project_count }}</td>
-                  </tr>
                   </tr>
                   {% empty %}
                    <tr>
@@ -213,7 +219,7 @@
                   </tr>
                   {% empty %}
                   <tr>
-                    <td colspan="3">No dependency data available</td>
+                    <td colspan="4">No dependency data available</td>
                   </tr>
                   {% endfor %}
                 </tbody>
