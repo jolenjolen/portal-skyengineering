@@ -17,17 +17,24 @@
         <a class="navbar-brand" href="{% url 'home' %}">
           <img src="{% static 'media/logo.png' %}" alt="SKY LOGO" height="40" />
         </a>
-        <span class="fw-semibold text-primary">Engineering portal</span>
+        <div class="d-flex align-items-center gap-3">
+          <span class="fw-semibold text-primary">Engineering portal</span>
+
+          <form action="{% url 'logout' %}" method="post" class="m-0" >
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+          </form>
+        </div>
       </div>
     </nav>
 
     <div class="container-fluid">
       <div class="row">
         <!--Side Navigation bar-->
-        <aside class="col-md-2 min-vh-100 bg-white border-end p-4">
+        <aside class="col-md-2 col-12 bg-white border-end p-4">
           <h5 class="mb-4">Menu</h5>
 
-          <ul class="nav flex-clumn gap-2">
+          <ul class="nav flex-column gap-2">
             <li class="nav-item">
               <a href="{% url 'home' %}" class="nav-link">Dashboard</a>
             </li>
@@ -54,8 +61,14 @@
         </aside>
 
         <!--Reports-->
-        <main class="col-md-10 p5">
+        <main class="col-md-10 col-12 p-5">
           <h1>Reports Dashboard</h1>
+          <a
+            href="{% url 'export_team_report_csv' %}"
+            class="btn btn-primary mb-4"
+          >
+            Download Team Report (csv)
+          </a>
 
           <!--Summary cards-->
           <div class="row g-4 mb-5">
@@ -113,6 +126,107 @@
               </table>
             </div>
           </section>
+          <!--end of No leader section -->
+
+          <!--Department reports-->
+          <section class="card shadow-sm border-0 mt-4">
+            <div class="card-body">
+              <h2 class="h4 mb-3">Teams per department</h2>
+
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Department</th>
+                    <th>Number of teams</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for department in department_report %}
+                  <tr>
+                    <td>{{ department.department }}</td>
+                    <td>{{ department.team_count }}</td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="2">No department data available.</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <!--end of department reports-->
+
+          <!--project reports-->
+
+          <section class="card shadow-sm border-0 mt-4">
+            <div class="card-body">
+              <h2 class="h4 mb-3">Projects Per Team</h2>
+
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Team</th>
+                    <th>Projects</th>
+                    <th>Number of Projects</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for team in project_report %}
+                  <tr>
+                    <td>{{ team.team_name }}</td>
+                    <td>
+                      {% for project in team.projects %}
+                        {{ project }}<br>
+                      {% empty %}
+                        No projects
+                      {% endfor %}
+                    </td>
+                    <td>{{ team.project_count }}</td>
+                  </tr>
+                  {% empty %}
+                   <tr>
+                    <td colspan="3">No project data available.</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <!--End of projects reports-->
+
+          <!--Dependency report-->
+          <section class="card shadow-sm border-0 mt-4">
+            <div class="card-body">
+              <h2 class="h4 mb-3">Dependency Report</h2>
+
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Team</th>
+                    <th>Depends On</th>
+                    <th>Dependency Type</th>
+                    <th>Direction</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for dependency in dependency_report %}
+                  <tr>
+                    <td>{{ dependency.team_name }}</td>
+                    <td>{{ dependency.depends_on }}</td>
+                    <td>{{ dependency.dependency_type }}</td>
+                    <td>{{ dependency.direction }}</td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="4">No dependency data available</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <!--End of dependency report-->
         </main>
       </div>
     </div>

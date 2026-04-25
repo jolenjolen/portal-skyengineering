@@ -3,6 +3,7 @@ import os
 import django
 from openpyxl import load_workbook
 from datetime import datetime
+from django.contrib.auth.hashers import make_password
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "portal.settings")
 django.setup()
@@ -58,7 +59,7 @@ def get_or_create_user(full_name,role):
             "fname" : first_name,
             "sname": surname,
             "email": email,
-            "password": "Password123",
+            "password": make_password("Password123"),
             "role": role,
             "created" : datetime.now(),
             "active": True,

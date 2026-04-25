@@ -32,6 +32,7 @@ class TblDependencies(models.Model):
     downstream = models.BooleanField(blank=True, null=True)
     team = models.ForeignKey('TblTeam', models.DO_NOTHING, db_column='team', blank=True, null=True)
     type = models.TextField(blank=True, null=True)
+    dependency_team_name = models.TextField(blank=True,null=True)
 
     class Meta:
         managed = False
