@@ -46,3 +46,30 @@ def reset_user_password(request, user_id):
         user.password = make_password("Password123")
         user.save(update_fields=["password"])
     return redirect("manage_users")
+
+#changes users status to active/inactive
+def toggle_user_active(request,user_id):
+    if not is_admin(request):
+        return redirect("home")
+    
+    if request.method == "POST":
+        user = TblUser.objects.get(id=user_id)
+        user.active = not user.active
+        user.save(update_fields=["active"])
+    
+    return redirect("manage_users")
+
+#change user role
+def change_user_role(request,user_id):
+    if not is_admin(request):
+        return redirect("home")
+    
+    if request.method == "POST":
+        user = TblUser.objects.get(id=user_id)
+        new_role = request.POST.get("role")
+
+        if new_role in ["User", "Admin", "Team Leader", "Department Head"]:
+            user.role = new_role
+            user.save(update_fields=["role"])
+        
+    return redirect("manage_users")
