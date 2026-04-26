@@ -46,7 +46,9 @@ Dexcription: Admin Manage users
             <th>Username</th>
             <th>Role</th>
             <th>Status</th>
-            <th>Actions</th>
+            <th>Change Role</th>
+            <th>Reset Password</th>
+            <th>Activate/ Deactivate</th>
           </tr>
         </thead>
         <tbody>
@@ -57,6 +59,18 @@ Dexcription: Admin Manage users
             <td>{{ user.role }}</td>
             <td>{% if user.active %} Active {% else %} Inactive {% endif %}</td>
             <td>
+                <form action="{% url 'change_user_role' user.id %}" method="post" class="d-flex gap-2">
+                    {% csrf_token %}
+                    <select name="role" class="form-select form-select-sm">
+                        <option value="User">{% if user.role == "User" %}selected{% endif %}User</option>
+                        <option value="Admin">{% if user.role == "Admin" %}selected{% endif %}Admin</option>
+                        <option value="Team Leader">{% if user.role == "Team Leader" %}selected{% endif %}Team Leader</option>
+                        <option value="Department Head">{% if user.role == "Department Head" %}selected{% endif %}Department Head</option>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                </form>
+            </td>
+            <td>
               <form
                 action="{% url 'reset_user_password' user.id %}"
                 method="post"
@@ -66,6 +80,16 @@ Dexcription: Admin Manage users
                   Reset password
                 </button>
               </form>
+            </td>
+            <td>
+                <form action="{% url 'toggle_user_active' user.id %}" method="post">
+                    {% csrf_token %}
+                    {% if user.active %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Deactivate</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-sm btn-outline-success">Activate</button>
+                    {% endif %}
+                </form>
             </td>
           </tr>
           {% endfor %}
