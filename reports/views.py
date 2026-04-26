@@ -1,10 +1,19 @@
+"""
+Authors: Muhammed Hasan (w1689191)
+Decription: Create reports for display
+"""
+
 import csv
 from django.shortcuts import render
 from django.http import HttpResponse
 from core.models import TblTeam, TblDepartment, TblProject, TblDependencies
+from accounts.views import is_logged_in
+from django.shortcuts import redirect
 
 
 def reports_dashboard(request):
+    if not is_logged_in(request):
+        return redirect("login")
     """
     Main Reports page
     Shows summary values and identifies teams missing a team leader
@@ -76,6 +85,8 @@ def reports_dashboard(request):
 
 # create reports csv function
 def export_team_report_csv(request):
+    if not is_logged_in(request):
+        return redirect("login")
     # downloads team report with team summary
     csv_response = HttpResponse(content_type="text/csv")
     csv_response["Content-Disposition"] = 'attachment; filename="Sky_Teams_Summary.csv"'
@@ -150,21 +161,29 @@ def export_team_report_csv(request):
                 project_count,
             ]
         )
-    
-    #Dependency report
+
+    # Dependency report
     csv_writer.writerow([])
     csv_writer.writerow(["Dependency Report"])
     csv_writer.writerow(["Team", "Depends On", "Dependency Type", "Direction"])
 
     for dependency in TblDependencies.objects.select_related("team").all():
-        csv_writer.writerow([
-            dependency.team.name if dependency.team else "No team",
-            dependency.dependency_team_name or "Not specified",
-            dependency.type or "Not specified"
-            "Downstream" if dependency.downstream else "Upstream",
-        ])
+        csv_writer.writerow(
+            [
+                dependency.team.name if dependency.team else "No team",
+                dependency.dependency_team_name or "Not specified",
+                (
+                    dependency.type or "Not specified" "Downstream"
+                    if dependency.downstream
+                    else "Upstream"
+                ),
+            ]
+        )
 
     return csv_response
 
+
 def visualisations_view(request):
-    return render(request,"reports/visualisations.html")
+    if not is_logged_in(request):
+        return redirect("login")
+    return render(request, "reports/visualisations.html")
