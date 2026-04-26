@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from core.models import TblTeam, TblDepartment, TblProject, TblDependencies
 from accounts.views import is_logged_in
 from django.shortcuts import redirect
+from accounts.views import is_admin
 
 
 def reports_dashboard(request):
@@ -78,6 +79,7 @@ def reports_dashboard(request):
         "department_report": department_report,
         "project_report": project_report,
         "dependency_report": dependency_report,
+        "is_admin_user": is_admin(request),
     }
 
     return render(request, "reports/dashboard.html", context)

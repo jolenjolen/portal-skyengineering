@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'core',
     'dashboard',
     'reports',
+    'adminpanel',
 ]
 
 MIDDLEWARE = [

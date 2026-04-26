@@ -1,3 +1,8 @@
+"""
+Authors:
+Muhammed Hasan (w1689191): Admin access, defined users and admin.
+"""
+
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password, check_password
@@ -6,6 +11,23 @@ from core.models import TblUser
 # Helper to check if user is logged in
 def is_logged_in(request):
     return request.session.get('user_id') is not None
+
+#Finds the user who is currently logged in
+def current_user(request):
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return None
+    
+    try:
+        return TblUser.objects.get(id=user_id)
+    except TblUser.DoesNotExist:
+        return None
+
+# Helper to check if user is an admin
+def is_admin(request):
+    user = current_user(request)
+    return user is not None and user.role == "Admin"
 
 # Main index page
 def index_view(request):
