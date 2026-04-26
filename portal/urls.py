@@ -22,4 +22,5 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path('', include('dashboard.urls')),
     path('reports/', include('reports.urls')),
+    path('admin-panel/',include('adminpanel.urls')),
 ]

@@ -24,9 +24,11 @@ Decription: Main reports page to display table data
         <div class="d-flex align-items-center gap-3">
           <span class="fw-semibold text-primary">Engineering portal</span>
 
-          <form action="{% url 'logout' %}" method="post" class="m-0" >
+          <form action="{% url 'logout' %}" method="post" class="m-0">
             {% csrf_token %}
-            <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+            <button type="submit" class="btn btn-outline-danger btn-sm">
+              Logout
+            </button>
           </form>
         </div>
       </div>
@@ -61,6 +63,11 @@ Decription: Main reports page to display table data
             <li class="nav-item">
               <a href="" class="nav-link">Profile</a>
             </li>
+            {% if is_admin_user %}
+            <li class="nav-item">
+              <a href="{% url 'admin_dashboard' %}" class="nav-link">Admin</a>
+            </li>
+            {% endif %}
           </ul>
         </aside>
 
@@ -74,7 +81,11 @@ Decription: Main reports page to display table data
             Download Team Report (csv)
           </a>
 
-          <a href="{% url 'reports_visualisations' %}" class="btn btn-success mb-4 ms-2">View visualisation</a>
+          <a
+            href="{% url 'reports_visualisations' %}"
+            class="btn btn-success mb-4 ms-2"
+            >View visualisation</a
+          >
 
           <!--Summary cards-->
           <div class="row g-4 mb-5">
@@ -182,18 +193,15 @@ Decription: Main reports page to display table data
                   <tr>
                     <td>{{ team.team_name }}</td>
                     <td>
-                      {% for project in team.projects %}
-                        {{ project }}<br>
-                      {% empty %}
-                        No projects
-                      {% endfor %}
+                      {% for project in team.projects %} {{ project }}<br />
+                      {% empty %} No projects {% endfor %}
                     </td>
                     <td>{{ team.project_count }}</td>
                   </tr>
                   {% empty %}
-                   <tr>
+                  <tr>
                     <td colspan="3">No project data available.</td>
-                    </tr>
+                  </tr>
                   {% endfor %}
                 </tbody>
               </table>
