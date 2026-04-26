@@ -7,6 +7,7 @@ from accounts.views import is_admin
 from core.models import TblUser
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
+from django.utils import timezone
 
 
 # admin dashboard
@@ -40,30 +41,32 @@ def reset_user_password(request, user_id):
 
     if request.method == "POST":
         user = TblUser.objects.get(id=user_id)
-        #stop admins from resetting own password in manage users
+        # stop admins from resetting own password in manage users
         if user.id == request.session.get("user_id"):
             return redirect("manage_users")
         user.password = make_password("Password123")
         user.save(update_fields=["password"])
     return redirect("manage_users")
 
-#changes users status to active/inactive
-def toggle_user_active(request,user_id):
+
+# changes users status to active/inactive
+def toggle_user_active(request, user_id):
     if not is_admin(request):
         return redirect("home")
-    
+
     if request.method == "POST":
         user = TblUser.objects.get(id=user_id)
         user.active = not user.active
         user.save(update_fields=["active"])
-    
+
     return redirect("manage_users")
 
-#change user role
-def change_user_role(request,user_id):
+
+# change user role
+def change_user_role(request, user_id):
     if not is_admin(request):
         return redirect("home")
-    
+
     if request.method == "POST":
         user = TblUser.objects.get(id=user_id)
         new_role = request.POST.get("role")
@@ -71,5 +74,40 @@ def change_user_role(request,user_id):
         if new_role in ["User", "Admin", "Team Leader", "Department Head"]:
             user.role = new_role
             user.save(update_fields=["role"])
-        
+
+    return redirect("manage_users")
+
+
+# create a user
+def add_user(request):
+    if not is_admin(request):
+        return redirect("home")
+
+    if request.method == "POST":
+        TblUser.objects.create(
+            fname=request.POST.get("fname"),
+            sname=request.POST.get("sname"),
+            uname=request.POST.get("uname"),
+            email=request.POST.get("email"),
+            role=request.POST.get("role"),
+            active=True,
+            created=timezone.now(),
+            password=make_password("Password123"),
+        )
+    return redirect("manage_users")
+
+
+# delete a user
+
+
+def delete_user(request, user_id):
+    if not is_admin(request):
+        return redirect("home")
+
+    if request.method == "POST":
+        user = TblUser.objects.get(id=user_id)
+
+        # prevents admins from deleting their own account
+        if user.id != request.session.get("user_id"):
+            user.delete()
     return redirect("manage_users")

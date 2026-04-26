@@ -37,6 +37,66 @@ Dexcription: Admin Manage users
       </div>
     </nav>
 
+    <div class="card shadow-sm border-0 mt-4">
+      <div class="card-body">
+        <h5 class="card-title">Add New User</h5>
+
+        <form action="{% url 'add_user' %}" method="post" class="row g-3">
+          {% csrf_token %}
+          <div class="col-md-2">
+            <input
+              type="text"
+              name="fname"
+              class="form-control"
+              placeholder="First name"
+              required
+            />
+          </div>
+          <div class="col-md-2">
+            <input
+              type="text"
+              name="sname"
+              class="form-control"
+              placeholder="Surname"
+              required
+            />
+          </div>
+          <div class="col-md-2">
+            <input
+              type="text"
+              name="uname"
+              class="form-control"
+              placeholder="Username"
+              required
+            />
+          </div>
+          <div class="col-md-3">
+            <input
+              type="text"
+              name="email"
+              class="form-control"
+              placeholder="Email"
+              required
+            />
+          </div>
+          <div class="col-md-2">
+            <select name="role" class="form-select" required>
+              <option value="User">User</option>
+              <option value="Admin">Admin</option>
+              <option value="Team Leader">Team Leader</option>
+              <option value="Department Head">Department Head</option>
+            </select>
+          </div>
+          <div class="col-md-1">
+            <button type="submit" class="btn btn-success w-100">Add</button>
+          </div>
+        </form>
+        <p class="text-muted mt-2 mb-0">
+          New users are created with the default password: Password123
+        </p>
+      </div>
+    </div>
+
     <div class="container py-5">
       <h1>Manage Users</h1>
       <table class="table table-striped mt-4">
@@ -49,6 +109,7 @@ Dexcription: Admin Manage users
             <th>Change Role</th>
             <th>Reset Password</th>
             <th>Activate/ Deactivate</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -59,16 +120,31 @@ Dexcription: Admin Manage users
             <td>{{ user.role }}</td>
             <td>{% if user.active %} Active {% else %} Inactive {% endif %}</td>
             <td>
-                <form action="{% url 'change_user_role' user.id %}" method="post" class="d-flex gap-2">
-                    {% csrf_token %}
-                    <select name="role" class="form-select form-select-sm">
-                        <option value="User">{% if user.role == "User" %}selected{% endif %}User</option>
-                        <option value="Admin">{% if user.role == "Admin" %}selected{% endif %}Admin</option>
-                        <option value="Team Leader">{% if user.role == "Team Leader" %}selected{% endif %}Team Leader</option>
-                        <option value="Department Head">{% if user.role == "Department Head" %}selected{% endif %}Department Head</option>
-                    </select>
-                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
-                </form>
+              <form
+                action="{% url 'change_user_role' user.id %}"
+                method="post"
+                class="d-flex gap-2"
+              >
+                {% csrf_token %}
+                <select name="role" class="form-select form-select-sm">
+                  <option value="User">
+                    {% if user.role == "User" %}selected{% endif %}User
+                  </option>
+                  <option value="Admin">
+                    {% if user.role == "Admin" %}selected{% endif %}Admin
+                  </option>
+                  <option value="Team Leader">
+                    {% if user.role == "Team Leader" %}selected{% endif %}Team
+                    Leader
+                  </option>
+                  <option value="Department Head">
+                    {% if user.role == "Department Head" %}selected{% endif %}Department Head
+                  </option>
+                </select>
+                <button type="submit" class="btn btn-sm btn-primary">
+                  Save
+                </button>
+              </form>
             </td>
             <td>
               <form
@@ -82,14 +158,28 @@ Dexcription: Admin Manage users
               </form>
             </td>
             <td>
-                <form action="{% url 'toggle_user_active' user.id %}" method="post">
-                    {% csrf_token %}
-                    {% if user.active %}
-                        <button type="submit" class="btn btn-sm btn-outline-danger">Deactivate</button>
-                    {% else %}
-                        <button type="submit" class="btn btn-sm btn-outline-success">Activate</button>
-                    {% endif %}
-                </form>
+              <form
+                action="{% url 'toggle_user_active' user.id %}"
+                method="post"
+              >
+                {% csrf_token %} {% if user.active %}
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                  Deactivate
+                </button>
+                {% else %}
+                <button type="submit" class="btn btn-sm btn-outline-success">
+                  Activate
+                </button>
+                {% endif %}
+              </form>
+            </td>
+            <td>
+              <form action="{% url 'delete_user' user.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                  Delete
+                </button>
+              </form>
             </td>
           </tr>
           {% endfor %}
