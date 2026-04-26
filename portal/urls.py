@@ -1,4 +1,7 @@
 """
+Authors: 
+Muhammed Hasan(w1689191): reports and adminpanel
+
 URL configuration for portal project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
