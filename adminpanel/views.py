@@ -57,22 +57,14 @@ def admin_panel_view(request):
 
 
 # ─── MANAGE PAGES ───────────────────────────────────────
-
 def manage_users(request):
     if not is_admin(request):
-<<<<<<< HEAD
         return redirect("home")
     users = TblUser.objects.select_related("team").all()
     teams = TblTeam.objects.all()
     return render(request, "adminpanel/manage_users.html", {
         "users": users,
         "teams": teams,
-=======
-        return redirect('home')
-    return render(request, 'adminpanel/manage_users.html', {
-        'users': TblUser.objects.all(),
-        'teams': TblTeam.objects.all(),
->>>>>>> origin/main
     })
 
 
