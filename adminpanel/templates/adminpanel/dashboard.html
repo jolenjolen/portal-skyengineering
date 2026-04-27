@@ -149,7 +149,6 @@ Description: Admin panel dashboard with audit log
         <aside class="col-md-2 col-12 bg-white border-end p-4 min-vh-100">
           <h5 class="mb-4">Menu</h5>
           <ul class="nav flex-column gap-2">
-<<<<<<< HEAD
             <li class="nav-item">
               <a href="{% url 'home' %}" class="nav-link"> Dashboard </a>
             </li>
@@ -176,16 +175,6 @@ Description: Admin panel dashboard with audit log
             <li class="nav-item">
               <a href="#" class="nav-link">Profile</a>
             </li>
-=======
-            <li class="nav-item"><a href="{% url 'home' %}" class="nav-link">Dashboard</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Teams</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Departments</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Organization</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Messages</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Schedule</a></li>
-            <li class="nav-item"><a href="{% url 'reports_dashboard' %}" class="nav-link">Reports</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Profile</a></li>
->>>>>>> origin/main
             {% if is_admin_user %}
             <li class="nav-item">
               <a href="{% url 'admin_dashboard' %}" class="nav-link active fw-bold text-danger">Admin</a>
