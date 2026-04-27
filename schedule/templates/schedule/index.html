@@ -1,20 +1,24 @@
 <!--
-Author: Muhammed Hasan (w1689191)
-Dexcription: Admin panel dashboard
+Authors: Dervish Denaj
+Description: Schedule page for viewing and managing meetings/events
 -->
-
 {% load static %}
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Schedule - SKY Engineering</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-    <title>Admin Panel</title>
   </head>
   <body class="bg-light">
     <!--Top navigation bar-->
@@ -23,10 +27,8 @@ Dexcription: Admin panel dashboard
         <a class="navbar-brand" href="{% url 'home' %}">
           <img src="{% static 'media/logo.png' %}" alt="SKY Logo" height="40" />
         </a>
-
         <div class="d-flex align-items-center gap-3">
           <span class="fw-semibold text-primary">Engineering Portal</span>
-
           <form action="{% url 'logout' %}" method="post" class="m-0">
             {% csrf_token %}
             <button type="submit" class="btn btn-outline-danger btn-sm">
@@ -40,12 +42,11 @@ Dexcription: Admin panel dashboard
     <div class="container-fluid">
       <div class="row">
         <!--Side Menu-->
-        <aside class="col-md-2 col-12 bg-white border-end p-4 min-vh-100">
-          <h5 class="mb-4">Admin Menu</h5>
-
+        <aside class="col-md-2 col-12 bg-white border-end p-4">
+          <h5 class="mb-4">Menu</h5>
           <ul class="nav flex-column gap-2">
             <li class="nav-item">
-              <a href="{% url 'home' %}" class="nav-link"> Dashboard </a>
+              <a href="{% url 'home' %}" class="nav-link">Dashboard</a>
             </li>
             <li class="nav-item">
               <a href="#" class="nav-link">Teams</a>
@@ -60,71 +61,59 @@ Dexcription: Admin panel dashboard
               <a href="#" class="nav-link">Messages</a>
             </li>
             <li class="nav-item">
-              <a href="{% url 'schedule' %}" class="nav-link">Schedule</a>
+              <a href="{% url 'schedule' %}" class="nav-link active fw-bold text-danger">Schedule</a>
             </li>
             <li class="nav-item">
-              <a href="{% url 'reports_dashboard' %}" class="nav-link">
-                Reports
-              </a>
+              <a href="{% url 'reports_dashboard' %}" class="nav-link">Reports</a>
             </li>
             <li class="nav-item">
               <a href="#" class="nav-link">Profile</a>
             </li>
             {% if is_admin_user %}
             <li class="nav-item">
-              <a
-                href="{% url 'admin_dashboard' %}"
-                class="nav-link active fw-bold text-danger"
-                >Admin</a
-              >
+              <a href="{% url 'admin_dashboard' %}" class="nav-link">Admin</a>
             </li>
             {% endif %}
           </ul>
         </aside>
-        <main class="col-md-10 col-12 py-5">
-          <h1>Admin Dashboard</h1>
+
+        <!--Schedule main content-->
+        <main class="col-md-10 col-12 p-5">
+          <h1 class="mb-3">Schedule</h1>
           <p class="text-muted">
-            Manage users, teams and the system on this page. Only admins can see
-            this page. <br />
-            Please logout after done
+            View and manage your upcoming meetings and events.
           </p>
 
-          <div class="row g-4 mt-3">
-            <!--Manage Users card-->
-            <div class="col-md-4">
-              <div class="card glowing-card">
-                <div class="card-body">
-                  <h5 class="card-title">Manage Users</h5>
-                  <p class="card-text">
-                    Add, edit, deactivate, or change user roles.
-                  </p>
-                  <a
-                    href="{% url 'manage_users' %}"
-                    class="btn btn-gradient"
-                  >
-                    Manage Users</a
-                  >
-                </div>
-              </div>
+          <!--Upcoming events table-->
+          <section class="card shadow-sm border-0 mt-4">
+            <div class="card-body">
+              <h2 class="h4 mb-3">Upcoming Events</h2>
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Location</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for event in events %}
+                  <tr>
+                    <td>{{ event.title }}</td>
+                    <td>{{ event.date }}</td>
+                    <td>{{ event.time }}</td>
+                    <td>{{ event.location }}</td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="4">No upcoming events scheduled.</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
-            <!--Manage Teams card-->
-            <div class="col-md-4">
-              <div class="card glowing-card">
-                <div class="card-body">
-                  <h5 class="card-title">Manage Teams</h5>
-                  <p class="card-text">
-                    Edit teams, leaders, departments and project information.
-                  </p>
-                  <a
-                    href="{% url 'reports_dashboard' %}"
-                    class="btn btn-gradient"
-                  >
-                    Manage Teams</a
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
+          </section>
         </main>
       </div>
     </div>
