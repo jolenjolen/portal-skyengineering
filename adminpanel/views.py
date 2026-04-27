@@ -57,9 +57,11 @@ def admin_panel_view(request):
 def manage_users(request):
     if not is_admin(request):
         return redirect("home")
+    users = TblUser.objects.select_related("team").all()
+    teams = TblTeam.objects.all()
     return render(request, "adminpanel/manage_users.html", {
-        "users": TblUser.objects.all(),
-        "teams": TblTeam.objects.all(),
+        "users": users,
+        "teams": teams,
     })
 
 
@@ -171,6 +173,7 @@ def user_create_view(request):
     if request.method == 'POST':
         uname = request.POST.get('uname')
         email = request.POST.get('email')
+        team_id = request.POST.get("team")
         error = None
         if TblUser.objects.filter(uname=uname).exists():
             error = "Username already exists"
@@ -178,6 +181,11 @@ def user_create_view(request):
             error = "Email already exists"
         if error:
             return redirect(f"{request.META.get('HTTP_REFERER', '/admin-panel/users/')}?error={error}")
+    
+        if team_id:
+            team = TblTeam.objects.get(id=team_id)
+        else:
+            team = None
         raw_password = generate_password()
         TblUser.objects.create(
             fname=request.POST.get('fname'),
@@ -186,7 +194,7 @@ def user_create_view(request):
             email=email,
             password=make_password(raw_password),
             role=request.POST.get('role'),
-            team_id=request.POST.get('team') or None,
+            team=team,
             created=timezone.now(),
             active=True
         )
@@ -198,12 +206,17 @@ def user_edit_view(request, user_id):
     if not is_admin(request):
         return redirect('login')
     user = get_object_or_404(TblUser, id=user_id)
+    team_id = request.POST.get('team')
+    if team_id:
+            team = TblTeam.objects.get(id=team_id)
+    else:
+        team = None
     if request.method == 'POST':
         user.fname = request.POST.get('fname')
         user.sname = request.POST.get('sname')
         user.email = request.POST.get('email')
         user.role = request.POST.get('role')
-        user.team_id = request.POST.get('team') or None
+        user.team = team
         user.active = request.POST.get('active') == 'on'
         user.save()
     return redirect('manage_users')
