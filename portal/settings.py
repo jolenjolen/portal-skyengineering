@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'dashboard',
     'reports',
     'adminpanel',
-    'schedule'
+    'schedule',
+    'messaging',
 ]
 
 MIDDLEWARE = [

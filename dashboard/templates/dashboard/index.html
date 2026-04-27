@@ -66,7 +66,7 @@ Decription: Main start page to welcome users
               <a href="#" class="nav-link">Organization</a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">Messages</a>
+              <a href="{% url 'inbox' %}" class="nav-link">Messages</a>
             </li>
             <li class="nav-item">
               <a href="{% url 'schedule' %}" class="nav-link">Schedule</a>
@@ -166,7 +166,7 @@ Decription: Main start page to welcome users
                     Message teams and see your inbox
                   </p>
                   <a
-                    href="{% url 'reports_dashboard' %}"
+                    href="{% url 'inbox' %}"
                     class="btn btn-gradient"
                   >
                     Open messages</a

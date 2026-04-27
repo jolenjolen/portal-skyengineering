@@ -57,7 +57,6 @@ def admin_panel_view(request):
 
 
 # ─── MANAGE PAGES ───────────────────────────────────────
-
 def manage_users(request):
     if not is_admin(request):
         return redirect("home")
