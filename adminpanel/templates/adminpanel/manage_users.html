@@ -142,7 +142,7 @@ Description: Admin Manage Users
 
             <!-- Edit button -->
             <td>
-              <button class="btn btn-sm btn-outline-primary" onclick="toggleEdit({{ user.id }})">Edit</button>
+              <button class="btn btn-sm btn-outline-primary" data-id="{{ user.id }}" onclick="toggleEdit(this)">Edit</button>
             </td>
 
             <!-- Delete -->
@@ -199,7 +199,7 @@ Description: Admin Manage Users
                 </div>
                 <div class="col-md-2 d-flex align-items-end gap-2">
                   <button type="submit" class="btn btn-sm btn-primary">Save</button>
-                  <button type="button" class="btn btn-sm btn-secondary" onclick="toggleEdit({{ user.id }})">Cancel</button>
+                  <button type="button" class="btn btn-sm btn-secondary" data-id="{{ user.id }}" onclick="toggleEdit(this)">Cancel</button>
                 </div>
               </form>
             </td>
@@ -211,7 +211,8 @@ Description: Admin Manage Users
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      function toggleEdit(id) {
+      function toggleEdit(btn) {
+        const id = btn.getAttribute("data-id");
         const row = document.getElementById('edit-row-' + id);
         row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
       }
