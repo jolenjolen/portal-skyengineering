@@ -9,14 +9,22 @@ from django.db import models
 
 
 class TblAudit(models.Model):
-    user = models.ForeignKey('TblUser', models.DO_NOTHING, db_column='user', blank=True, null=True)
-    action = models.TextField()
+    user = models.ForeignKey(
+        'TblUser',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='audit_logs',
+        db_column='user'          # ← tells Django the real column name is 'user', not 'user_id'
+    )
+    action   = models.TextField()
     datetime = models.DateTimeField()
 
     class Meta:
-        managed = False
         db_table = 'tbl_audit'
+        ordering = ['-datetime']
 
+    def __str__(self):
+        return f"[{self.datetime:%Y-%m-%d %H:%M}] {self.user} — {self.action}"
 
 class TblDepartment(models.Model):
     name = models.TextField(unique=True)

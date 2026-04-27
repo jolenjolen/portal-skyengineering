@@ -1,6 +1,6 @@
 <!--
 Author: Muhammed Hasan (w1689191), Jolen Mascarenhas (w2078969)
-Description: Admin panel dashboard
+Description: Admin panel dashboard with audit log
 -->
 
 {% load static %}
@@ -12,6 +12,117 @@ Description: Admin panel dashboard
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
     <title>Admin Panel</title>
+    <style>
+      /* ── Terminal audit log ── */
+      .audit-terminal {
+        background: #1e1e2e;
+        border-radius: 10px;
+        overflow: hidden;
+        font-family: 'Courier New', 'Consolas', monospace;
+        font-size: 0.82rem;
+      }
+      .audit-terminal-bar {
+        background: #2a2a3d;
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 1px solid #3a3a50;
+      }
+      .audit-terminal-bar .dot {
+        width: 12px; height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .audit-terminal-bar .title {
+        color: #888;
+        font-size: 0.78rem;
+        margin-left: 0.5rem;
+        font-family: 'Courier New', monospace;
+      }
+      .audit-terminal-body {
+        max-height: 420px;
+        overflow-y: auto;
+        padding: 0.5rem 0;
+      }
+      .audit-terminal-body::-webkit-scrollbar { width: 6px; }
+      .audit-terminal-body::-webkit-scrollbar-track { background: #1e1e2e; }
+      .audit-terminal-body::-webkit-scrollbar-thumb { background: #3a3a50; border-radius: 3px; }
+
+      .log-row {
+        display: grid;
+        grid-template-columns: 160px 130px 1fr;
+        gap: 0.5rem;
+        padding: 0.3rem 1rem;
+        border-bottom: 1px solid #2a2a3d;
+        align-items: start;
+        transition: background 0.1s;
+      }
+      .log-row:last-child { border-bottom: none; }
+      .log-row:hover { background: #2a2a3d; }
+
+      .log-ts   { color: #6a9955; white-space: nowrap; }
+      .log-user { color: #9cdcfe; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .log-action { color: #d4d4d4; word-break: break-word; }
+
+      /* colour-code by action verb */
+      .log-action.created  { color: #4ec9b0; }
+      .log-action.edited   { color: #dcdcaa; }
+      .log-action.deleted  { color: #f44747; }
+      .log-action.reset    { color: #ce9178; }
+      .log-action.changed  { color: #c586c0; }
+      .log-action.activated   { color: #4ec9b0; }
+      .log-action.deactivated { color: #f44747; }
+
+      .audit-empty {
+        color: #555;
+        padding: 2rem 1rem;
+        text-align: center;
+      }
+
+      /* ── Log header row ── */
+      .log-header {
+        display: grid;
+        grid-template-columns: 160px 130px 1fr;
+        gap: 0.5rem;
+        padding: 0.4rem 1rem;
+        border-bottom: 1px solid #3a3a50;
+        color: #555;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      /* ── Filter bar ── */
+      .audit-filter {
+        background: #2a2a3d;
+        padding: 0.5rem 1rem;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        border-bottom: 1px solid #3a3a50;
+        flex-wrap: wrap;
+      }
+      .audit-filter input {
+        background: #1e1e2e;
+        border: 1px solid #3a3a50;
+        color: #d4d4d4;
+        border-radius: 4px;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.78rem;
+        font-family: 'Courier New', monospace;
+        width: 220px;
+      }
+      .audit-filter input::placeholder { color: #555; }
+      .audit-filter input:focus { outline: none; border-color: #6a9955; }
+      .audit-filter label { color: #888; font-size: 0.75rem; }
+
+      .audit-count {
+        color: #555;
+        font-size: 0.72rem;
+        margin-left: auto;
+      }
+    </style>
   </head>
   <body class="bg-light">
 
@@ -55,16 +166,16 @@ Description: Admin panel dashboard
         </aside>
 
         <!-- Main content -->
-        <main class="col-md-10 col-12 py-5 px-4">
+        <main class="col-md-10 col-12 py-4 px-4">
           <h1>Admin Dashboard</h1>
           <p class="text-muted">
             Manage users, teams and the system on this page. Only admins can see this page.<br />
-            Please logout after done.
+            Please logout when done.
           </p>
 
-          <div class="row g-4 mt-3">
+          <!-- ── CRUD cards ── -->
+          <div class="row g-4 mt-1">
 
-            <!-- Manage Users -->
             <div class="col-md-4">
               <div class="card glowing-card h-100">
                 <div class="card-body d-flex flex-column">
@@ -75,7 +186,6 @@ Description: Admin panel dashboard
               </div>
             </div>
 
-            <!-- Manage Teams -->
             <div class="col-md-4">
               <div class="card glowing-card h-100">
                 <div class="card-body d-flex flex-column">
@@ -86,7 +196,6 @@ Description: Admin panel dashboard
               </div>
             </div>
 
-            <!-- Manage Departments -->
             <div class="col-md-4">
               <div class="card glowing-card h-100">
                 <div class="card-body d-flex flex-column">
@@ -97,7 +206,6 @@ Description: Admin panel dashboard
               </div>
             </div>
 
-            <!-- Manage Projects -->
             <div class="col-md-4">
               <div class="card glowing-card h-100">
                 <div class="card-body d-flex flex-column">
@@ -108,7 +216,6 @@ Description: Admin panel dashboard
               </div>
             </div>
 
-            <!-- Manage Dependencies -->
             <div class="col-md-4">
               <div class="card glowing-card h-100">
                 <div class="card-body d-flex flex-column">
@@ -120,9 +227,101 @@ Description: Admin panel dashboard
             </div>
 
           </div>
+          <!-- end CRUD cards -->
+
+          <!-- ── Audit Log ── -->
+          <div class="mt-5">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <h4 class="mb-0">Activity Log</h4>
+              <span class="text-muted small">Last 100 actions · most recent first</span>
+            </div>
+
+            <div class="audit-terminal">
+
+              <!-- macOS-style title bar -->
+              <div class="audit-terminal-bar">
+                <span class="dot" style="background:#ff5f57;"></span>
+                <span class="dot" style="background:#febc2e;"></span>
+                <span class="dot" style="background:#28c840;"></span>
+                <span class="title">audit_log — tbl_audit</span>
+              </div>
+
+              <!-- Filter bar -->
+              <div class="audit-filter">
+                <label>filter:</label>
+                <input type="text" id="auditSearch"
+                       placeholder="search user or action…"
+                       oninput="filterLogs()" />
+                <span class="audit-count" id="auditCount"></span>
+              </div>
+
+              <!-- Column headers -->
+              <div class="log-header">
+                <span>timestamp</span>
+                <span>user</span>
+                <span>action</span>
+              </div>
+
+              <!-- Log rows -->
+              <div class="audit-terminal-body" id="auditBody">
+                {% if audit_logs %}
+                  {% for log in audit_logs %}
+                  <div class="log-row" data-search="{{ log.datetime|date:'Y-m-d H:i:s' }} {{ log.user.uname|default:'system' }} {{ log.action|lower }}">
+                    <span class="log-ts">{{ log.datetime|date:"Y-m-d H:i:s" }}</span>
+                    <span class="log-user">
+                      {% if log.user %}
+                        {{ log.user.uname }}
+                      {% else %}
+                        <span style="color:#555;">system</span>
+                      {% endif %}
+                    </span>
+                    <span class="log-action
+                      {% if 'created' in log.action|lower %}created
+                      {% elif 'edited' in log.action|lower %}edited
+                      {% elif 'deleted' in log.action|lower %}deleted
+                      {% elif 'reset' in log.action|lower %}reset
+                      {% elif 'changed' in log.action|lower %}changed
+                      {% elif 'activated' in log.action|lower and 'deactivated' not in log.action|lower %}activated
+                      {% elif 'deactivated' in log.action|lower %}deactivated
+                      {% endif %}
+                    ">{{ log.action }}</span>
+                  </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="audit-empty">no log entries yet</div>
+                {% endif %}
+              </div>
+
+            </div>
+            <!-- end .audit-terminal -->
+          </div>
+          <!-- end audit log section -->
+
         </main>
       </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const rows = document.querySelectorAll('#auditBody .log-row');
+
+      // Update visible count on load
+      updateCount();
+
+      function filterLogs() {
+        const q = document.getElementById('auditSearch').value.toLowerCase();
+        rows.forEach(row => {
+          const text = row.dataset.search || '';
+          row.style.display = text.includes(q) ? '' : 'none';
+        });
+        updateCount();
+      }
+
+      function updateCount() {
+        const visible = [...rows].filter(r => r.style.display !== 'none').length;
+        document.getElementById('auditCount').textContent =
+          visible + ' of ' + rows.length + ' entries';
+      }
+    </script>
   </body>
 </html>
