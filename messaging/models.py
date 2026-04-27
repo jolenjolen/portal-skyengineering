@@ -1,3 +1,6 @@
+"""
+Author: Marta Pikturnaite (w2073431)
+"""
 from django.db import models
 from core.models import TblUser
 
