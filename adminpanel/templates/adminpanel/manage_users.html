@@ -1,6 +1,6 @@
 <!--
-Author: Muhammed Hasan (w1689191)
-Dexcription: Admin Manage users
+Author: Muhammed Hasan (w1689191), Jolen Mascarenhas (w2078969)
+Description: Admin Manage Users
 -->
 
 {% load static %}
@@ -9,106 +9,95 @@ Dexcription: Admin Manage users
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-    <title>Admin Panel</title>
+    <title>Admin Panel – Manage Users</title>
   </head>
   <body class="bg-light">
-    <!--Top navigation bar-->
+
+    <!-- Top navigation bar -->
     <nav class="navbar bg-white border-bottom">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">
           <img src="{% static 'media/logo.png' %}" alt="SKY Logo" height="40" />
         </a>
-
         <div class="d-flex align-items-center gap-3">
           <span class="fw-semibold text-primary">Engineering Portal</span>
-
-          <a
-            href="{% url 'admin_dashboard' %}"
-            class="btn btn-outline-secondary btn-sm"
-          >
-            Back
-          </a>
+          <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-sm">Back</a>
         </div>
       </div>
     </nav>
 
-    <div class="card shadow-sm border-0 mt-4">
+    <!-- Add New User -->
+    <div class="card shadow-sm border-0 mt-4 mx-3">
       <div class="card-body">
         <h5 class="card-title">Add New User</h5>
-
-        <form action="{% url 'add_user' %}" method="post" class="row g-3">
+        <form action="{% url 'user_create' %}" method="post" class="row g-3">
           {% csrf_token %}
           <div class="col-md-2">
-            <input
-              type="text"
-              name="fname"
-              class="form-control"
-              placeholder="First name"
-              required
-            />
+            <input type="text" name="fname" class="form-control" placeholder="First name" required />
           </div>
           <div class="col-md-2">
-            <input
-              type="text"
-              name="sname"
-              class="form-control"
-              placeholder="Surname"
-              required
-            />
+            <input type="text" name="sname" class="form-control" placeholder="Surname" required />
           </div>
           <div class="col-md-2">
-            <input
-              type="text"
-              name="uname"
-              class="form-control"
-              placeholder="Username"
-              required
-            />
-          </div>
-          <div class="col-md-3">
-            <input
-              type="text"
-              name="email"
-              class="form-control"
-              placeholder="Email"
-              required
-            />
+            <input type="text" name="uname" class="form-control" placeholder="Username" required />
           </div>
           <div class="col-md-2">
+            <input type="email" name="email" class="form-control" placeholder="Email" required />
+          </div>
+          <div class="col-md-1">
             <select name="role" class="form-select" required>
+              <option value="" disabled selected>Role</option>
               <option value="User">User</option>
               <option value="Admin">Admin</option>
               <option value="Team Leader">Team Leader</option>
               <option value="Department Head">Department Head</option>
             </select>
           </div>
+          <div class="col-md-2">
+            <select name="team" class="form-select">
+              <option value="">No Team</option>
+              {% for team in teams %}
+                <option value="{{ team.id }}">{{ team.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
           <div class="col-md-1">
             <button type="submit" class="btn btn-success w-100">Add</button>
           </div>
         </form>
-        <p class="text-muted mt-2 mb-0">
-          New users are created with the default password: Password123
-        </p>
+        <p class="text-muted mt-2 mb-0">New users are created with a randomly generated temporary password shown once on creation.</p>
       </div>
     </div>
 
-    <div class="container py-5">
+    <!-- Flash messages -->
+    {% if request.GET.created_password %}
+    <div class="alert alert-success mx-3 mt-3">
+      User <strong>{{ request.GET.created_uname }}</strong> created. Temporary password:
+      <code>{{ request.GET.created_password }}</code>
+      <small class="d-block text-muted mt-1">This will not be shown again.</small>
+    </div>
+    {% endif %}
+    {% if request.GET.error %}
+    <div class="alert alert-danger mx-3 mt-3">{{ request.GET.error }}</div>
+    {% endif %}
+
+    <!-- Users Table -->
+    <div class="container-fluid py-4 px-3">
       <h1>Manage Users</h1>
-      <table class="table table-striped mt-4">
+      <table class="table table-striped mt-4 align-middle">
         <thead>
           <tr>
             <th>Name</th>
             <th>Username</th>
+            <th>Email</th>
             <th>Role</th>
+            <th>Team</th>
             <th>Status</th>
-            <th>Change Role</th>
             <th>Reset Password</th>
-            <th>Activate/ Deactivate</th>
+            <th>Activate / Deactivate</th>
+            <th>Edit</th>
             <th>Delete</th>
           </tr>
         </thead>
@@ -117,68 +106,101 @@ Dexcription: Admin Manage users
           <tr>
             <td>{{ user.fname }} {{ user.sname }}</td>
             <td>{{ user.uname }}</td>
+            <td>{{ user.email }}</td>
             <td>{{ user.role }}</td>
-            <td>{% if user.active %} Active {% else %} Inactive {% endif %}</td>
+            <td>{% if user.team %}{{ user.team.name }}{% else %}—{% endif %}</td>
             <td>
-              <form
-                action="{% url 'change_user_role' user.id %}"
-                method="post"
-                class="d-flex gap-2"
-              >
+              {% if user.active %}
+                <span class="badge bg-success">Active</span>
+              {% else %}
+                <span class="badge bg-secondary">Inactive</span>
+              {% endif %}
+            </td>
+
+            <!-- Reset password -->
+            <td>
+              <form action="{% url 'reset_user_password' user.id %}" method="post">
                 {% csrf_token %}
-                <select name="role" class="form-select form-select-sm">
-                  <option value="User">
-                    {% if user.role == "User" %}selected{% endif %}User
-                  </option>
-                  <option value="Admin">
-                    {% if user.role == "Admin" %}selected{% endif %}Admin
-                  </option>
-                  <option value="Team Leader">
-                    {% if user.role == "Team Leader" %}selected{% endif %}Team
-                    Leader
-                  </option>
-                  <option value="Department Head">
-                    {% if user.role == "Department Head" %}selected{% endif %}Department Head
-                  </option>
-                </select>
-                <button type="submit" class="btn btn-sm btn-primary">
-                  Save
+                <button type="submit" class="btn btn-sm btn-warning"
+                  {% if user.id == request.session.user_id %}disabled title="Cannot reset your own password here"{% endif %}>
+                  Reset
                 </button>
               </form>
             </td>
+
+            <!-- Toggle active -->
             <td>
-              <form
-                action="{% url 'reset_user_password' user.id %}"
-                method="post"
-              >
+              <form action="{% url 'toggle_user_active' user.id %}" method="post">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-sm btn-warning">
-                  Reset password
-                </button>
-              </form>
-            </td>
-            <td>
-              <form
-                action="{% url 'toggle_user_active' user.id %}"
-                method="post"
-              >
-                {% csrf_token %} {% if user.active %}
-                <button type="submit" class="btn btn-sm btn-outline-danger">
-                  Deactivate
-                </button>
+                {% if user.active %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Deactivate</button>
                 {% else %}
-                <button type="submit" class="btn btn-sm btn-outline-success">
-                  Activate
-                </button>
+                  <button type="submit" class="btn btn-sm btn-outline-success">Activate</button>
                 {% endif %}
               </form>
             </td>
+
+            <!-- Edit button -->
             <td>
-              <form action="{% url 'delete_user' user.id %}" method="post">
+              <button class="btn btn-sm btn-outline-primary" onclick="toggleEdit({{ user.id }})">Edit</button>
+            </td>
+
+            <!-- Delete -->
+            <td>
+              <form action="{% url 'user_delete' user.id %}" method="post"
+                    onsubmit="return confirm('Delete user {{ user.uname }}?')">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-sm btn-outline-danger">
+                <button type="submit" class="btn btn-sm btn-outline-danger"
+                  {% if user.id == request.session.user_id %}disabled title="Cannot delete your own account"{% endif %}>
                   Delete
                 </button>
+              </form>
+            </td>
+          </tr>
+
+          <!-- Inline edit row -->
+          <tr id="edit-row-{{ user.id }}" style="display:none; background:#f8f9fa;">
+            <td colspan="10">
+              <form action="{% url 'user_edit' user.id %}" method="post" class="row g-2 p-2">
+                {% csrf_token %}
+                <div class="col-md-2">
+                  <label class="form-label small fw-bold">First Name</label>
+                  <input type="text" name="fname" class="form-control form-control-sm" value="{{ user.fname }}" required />
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small fw-bold">Surname</label>
+                  <input type="text" name="sname" class="form-control form-control-sm" value="{{ user.sname }}" />
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small fw-bold">Email</label>
+                  <input type="email" name="email" class="form-control form-control-sm" value="{{ user.email }}" />
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small fw-bold">Role</label>
+                  <select name="role" class="form-select form-select-sm">
+                    <option value="User" {% if user.role == 'User' %}selected{% endif %}>User</option>
+                    <option value="Admin" {% if user.role == 'Admin' %}selected{% endif %}>Admin</option>
+                    <option value="Team Leader" {% if user.role == 'Team Leader' %}selected{% endif %}>Team Leader</option>
+                    <option value="Department Head" {% if user.role == 'Department Head' %}selected{% endif %}>Department Head</option>
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small fw-bold">Team</label>
+                  <select name="team" class="form-select form-select-sm">
+                    <option value="">No Team</option>
+                    {% for team in teams %}
+                      <option value="{{ team.id }}" {% if user.team_id == team.id %}selected{% endif %}>{{ team.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-1 d-flex align-items-center gap-2 pt-3">
+                  <input type="checkbox" name="active" id="active-{{ user.id }}" class="form-check-input" {% if user.active %}checked{% endif %} />
+                  <label for="active-{{ user.id }}" class="form-check-label small">Active</label>
+                </div>
+                <div class="col-md-2 d-flex align-items-end gap-2">
+                  <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="toggleEdit({{ user.id }})">Cancel</button>
+                </div>
               </form>
             </td>
           </tr>
@@ -186,5 +208,13 @@ Dexcription: Admin Manage users
         </tbody>
       </table>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function toggleEdit(id) {
+        const row = document.getElementById('edit-row-' + id);
+        row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+      }
+    </script>
   </body>
 </html>

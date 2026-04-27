@@ -1,5 +1,5 @@
 <!--
-Authors: Muhammed Hasan (w1689191) - Navbar, sidebar, cards to each page
+Author: Muhammed Hasan (w1689191) - Navbar, sidebar, cards to each page
 Decription: Main start page to welcome users
 -->
 {% load static %}
@@ -153,6 +153,43 @@ Decription: Main start page to welcome users
                     class="btn btn-gradient"
                   >
                     Open Organization</a
+                  >
+                </div>
+              </div>
+            </div>
+            <!--Messages card-->
+            <div class="col-md-4">
+              <div class="card glowing-card">
+                <div class="card-body">
+                  <h5 class="card-title">Messages</h5>
+                  <p class="card-text">
+                    Message teams and see your inbox
+                  </p>
+                  <a
+                    href="{% url 'reports_dashboard' %}"
+                    class="btn btn-gradient"
+                  >
+                    Open messages</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-4 mt-3">
+            <!--Schedule card-->
+            <div class="col-md-4">
+              <div class="card glowing-card">
+                <div class="card-body">
+                  <h5 class="card-title">Schedule</h5>
+                  <p class="card-text">
+                    View your calendar/ schedule and see upcoming meetings
+                  </p>
+                  <a
+                    href="{% url 'reports_dashboard' %}"
+                    class="btn btn-gradient"
+                  >
+                    Open Schedule</a
                   >
                 </div>
               </div>
