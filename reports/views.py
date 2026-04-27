@@ -188,4 +188,47 @@ def export_team_report_csv(request):
 def visualisations_view(request):
     if not is_logged_in(request):
         return redirect("login")
-    return render(request, "reports/visualisations.html")
+
+    total_teams = TblTeam.objects.count()
+    total_departments = TblDepartment.objects.count()
+    total_projects = TblProject.objects.count()
+    teams_no_leader = TblTeam.objects.filter(team_leader__isnull=True)
+
+    department_report = []
+    for department in TblDepartment.objects.all():
+        team_count = TblTeam.objects.filter(department=department).count()
+        department_report.append({
+            "department": department.name,
+            "team_count": team_count,
+        })
+
+    project_report = []
+    for team in TblTeam.objects.all():
+        project_names_holder = TblProject.objects.filter(team=team)
+        project_report.append({
+            "team_name": team.name,
+            "projects": [p.name for p in project_names_holder],
+            "project_count": project_names_holder.count(),
+        })
+
+    dependency_report = []
+    for dependency in TblDependencies.objects.select_related("team").all():
+        dependency_report.append({
+            "team_name": dependency.team.name if dependency.team else "No team",
+            "depends_on": dependency.dependency_team_name or "Not specified",
+            "dependency_type": dependency.type or "Not specified",
+            "direction": "Downstream" if dependency.downstream else "Upstream",
+        })
+
+    context = {
+        "total_teams": total_teams,
+        "total_departments": total_departments,
+        "total_projects": total_projects,
+        "teams_no_leader": teams_no_leader,
+        "department_report": department_report,
+        "project_report": project_report,
+        "dependency_report": dependency_report,
+        "is_admin_user": is_admin(request),
+    }
+
+    return render(request, "reports/visualisations.html", context)
