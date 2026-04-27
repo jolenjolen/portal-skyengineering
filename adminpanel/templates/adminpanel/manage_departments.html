@@ -1,0 +1,134 @@
+<!--
+Author: Muhammed Hasan (w1689191)
+Description: Admin Manage Departments
+-->
+
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <title>Admin Panel – Manage Departments</title>
+  </head>
+  <body class="bg-light">
+
+    <!-- Top navigation bar -->
+    <nav class="navbar bg-white border-bottom">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img src="{% static 'media/logo.png' %}" alt="SKY Logo" height="40" />
+        </a>
+        <div class="d-flex align-items-center gap-3">
+          <span class="fw-semibold text-primary">Engineering Portal</span>
+          <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-sm">Back</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Add New Department -->
+    <div class="card shadow-sm border-0 mt-4 mx-3">
+      <div class="card-body">
+        <h5 class="card-title">Add New Department</h5>
+        <form action="{% url 'department_create' %}" method="post" class="row g-3">
+          {% csrf_token %}
+          <div class="col-md-4">
+            <input type="text" name="name" class="form-control" placeholder="Department Name" required />
+          </div>
+          <div class="col-md-4">
+            <select name="department_head" class="form-select">
+              <option value="">No Department Head</option>
+              {% for user in users %}
+                <option value="{{ user.id }}">{{ user.fname }} {{ user.sname }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-1">
+            <button type="submit" class="btn btn-success w-100">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Departments Table -->
+    <div class="container-fluid py-4 px-3">
+      <h1>Manage Departments</h1>
+      <table class="table table-striped mt-4 align-middle">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Department Head</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for dept in departments %}
+          <tr>
+            <td>{{ dept.name }}</td>
+            <td>
+              {% if dept.department_head %}
+                {{ dept.department_head.fname }} {{ dept.department_head.sname }}
+              {% else %}
+                —
+              {% endif %}
+            </td>
+
+            <!-- Edit button -->
+            <td>
+              <button class="btn btn-sm btn-outline-primary" onclick="toggleEdit({{ dept.id }})">Edit</button>
+            </td>
+
+            <!-- Delete -->
+            <td>
+              <form action="{% url 'department_delete' dept.id %}" method="post"
+                    onsubmit="return confirm('Delete department {{ dept.name }}?')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+
+          <!-- Inline edit row -->
+          <tr id="edit-row-{{ dept.id }}" style="display:none; background:#f8f9fa;">
+            <td colspan="4">
+              <form action="{% url 'department_edit' dept.id %}" method="post" class="row g-2 p-2">
+                {% csrf_token %}
+                <div class="col-md-4">
+                  <label class="form-label small fw-bold">Name</label>
+                  <input type="text" name="name" class="form-control form-control-sm" value="{{ dept.name }}" required />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small fw-bold">Department Head</label>
+                  <select name="department_head" class="form-select form-select-sm">
+                    <option value="">No Department Head</option>
+                    {% for user in users %}
+                      <option value="{{ user.id }}" {% if dept.department_head_id == user.id %}selected{% endif %}>
+                        {{ user.fname }} {{ user.sname }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end gap-2">
+                  <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="toggleEdit({{ dept.id }})">Cancel</button>
+                </div>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function toggleEdit(id) {
+        const row = document.getElementById('edit-row-' + id);
+        row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+      }
+    </script>
+  </body>
+</html>

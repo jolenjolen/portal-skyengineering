@@ -1,0 +1,193 @@
+<!--
+Author: Muhammed Hasan (w1689191)
+Description: Admin Manage Teams
+-->
+
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <title>Admin Panel – Manage Teams</title>
+  </head>
+  <body class="bg-light">
+
+    <!-- Top navigation bar -->
+    <nav class="navbar bg-white border-bottom">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img src="{% static 'media/logo.png' %}" alt="SKY Logo" height="40" />
+        </a>
+        <div class="d-flex align-items-center gap-3">
+          <span class="fw-semibold text-primary">Engineering Portal</span>
+          <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-sm">Back</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Add New Team -->
+    <div class="card shadow-sm border-0 mt-4 mx-3">
+      <div class="card-body">
+        <h5 class="card-title">Add New Team</h5>
+        <form action="{% url 'team_create' %}" method="post" class="row g-3">
+          {% csrf_token %}
+          <div class="col-md-3">
+            <input type="text" name="name" class="form-control" placeholder="Team Name" required />
+          </div>
+          <div class="col-md-2">
+            <select name="team_leader" class="form-select">
+              <option value="">No Leader</option>
+              {% for user in users %}
+                <option value="{{ user.id }}">{{ user.fname }} {{ user.sname }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-2">
+            <select name="department" class="form-select">
+              <option value="">No Department</option>
+              {% for dept in departments %}
+                <option value="{{ dept.id }}">{{ dept.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-2">
+            <input type="text" name="slack" class="form-control" placeholder="Slack Channel" />
+          </div>
+          <div class="col-md-2">
+            <input type="text" name="wiki" class="form-control" placeholder="Wiki URL" />
+          </div>
+          <div class="col-md-3">
+            <input type="text" name="skills_and_tech" class="form-control" placeholder="Skills & Tech" />
+          </div>
+          <div class="col-md-8">
+            <input type="text" name="description" class="form-control" placeholder="Description" />
+          </div>
+          <div class="col-md-1">
+            <button type="submit" class="btn btn-success w-100">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Teams Table -->
+    <div class="container-fluid py-4 px-3">
+      <h1>Manage Teams</h1>
+      <table class="table table-striped mt-4 align-middle">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Leader</th>
+            <th>Department</th>
+            <th>Slack</th>
+            <th>Wiki</th>
+            <th>Skills & Tech</th>
+            <th>Description</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for team in teams %}
+          <tr>
+            <!-- View row -->
+            <td id="view-name-{{ team.id }}">{{ team.name }}</td>
+            <td id="view-leader-{{ team.id }}">
+              {% if team.team_leader %}{{ team.team_leader.fname }} {{ team.team_leader.sname }}{% else %}—{% endif %}
+            </td>
+            <td id="view-dept-{{ team.id }}">
+              {% if team.department %}{{ team.department.name }}{% else %}—{% endif %}
+            </td>
+            <td id="view-slack-{{ team.id }}">{{ team.slack|default:"—" }}</td>
+            <td id="view-wiki-{{ team.id }}">{{ team.wiki|default:"—" }}</td>
+            <td id="view-skills-{{ team.id }}">{{ team.skills_and_tech|default:"—" }}</td>
+            <td id="view-desc-{{ team.id }}">{{ team.description|default:"—" }}</td>
+
+            <!-- Edit button -->
+            <td>
+              <button class="btn btn-sm btn-outline-primary"
+                      onclick="toggleEdit({{ team.id }})">
+                Edit
+              </button>
+            </td>
+
+            <!-- Delete -->
+            <td>
+              <form action="{% url 'team_delete' team.id %}" method="post"
+                    onsubmit="return confirm('Delete team {{ team.name }}?')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+
+          <!-- Inline edit row (hidden by default) -->
+          <tr id="edit-row-{{ team.id }}" style="display:none; background:#f8f9fa;">
+            <td colspan="9">
+              <form action="{% url 'team_edit' team.id %}" method="post" class="row g-2 p-2">
+                {% csrf_token %}
+                <div class="col-md-2">
+                  <label class="form-label small fw-bold">Name</label>
+                  <input type="text" name="name" class="form-control form-control-sm" value="{{ team.name }}" required />
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small fw-bold">Leader</label>
+                  <select name="team_leader" class="form-select form-select-sm">
+                    <option value="">No Leader</option>
+                    {% for user in users %}
+                      <option value="{{ user.id }}" {% if team.team_leader_id == user.id %}selected{% endif %}>
+                        {{ user.fname }} {{ user.sname }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small fw-bold">Department</label>
+                  <select name="department" class="form-select form-select-sm">
+                    <option value="">No Department</option>
+                    {% for dept in departments %}
+                      <option value="{{ dept.id }}" {% if team.department_id == dept.id %}selected{% endif %}>
+                        {{ dept.name }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small fw-bold">Slack</label>
+                  <input type="text" name="slack" class="form-control form-control-sm" value="{{ team.slack }}" />
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small fw-bold">Wiki</label>
+                  <input type="text" name="wiki" class="form-control form-control-sm" value="{{ team.wiki }}" />
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small fw-bold">Skills & Tech</label>
+                  <input type="text" name="skills_and_tech" class="form-control form-control-sm" value="{{ team.skills_and_tech }}" />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold">Description</label>
+                  <input type="text" name="description" class="form-control form-control-sm" value="{{ team.description }}" />
+                </div>
+                <div class="col-md-3 d-flex align-items-end gap-2">
+                  <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="toggleEdit({{ team.id }})">Cancel</button>
+                </div>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function toggleEdit(id) {
+        const row = document.getElementById('edit-row-' + id);
+        row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+      }
+    </script>
+  </body>
+</html>

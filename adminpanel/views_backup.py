@@ -2,15 +2,125 @@
 Author: Muhammed Hasan (w1689191), Jolen Mascarenhas (w2078969)
 """
 
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
+from accounts.views import is_admin
+from core.models import TblUser
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.utils import timezone
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
+from django.contrib.auth.hashers import make_password
 from core.models import TblUser, TblTeam, TblDepartment, TblProject, TblDependencies
 from accounts.views import is_logged_in
 import secrets
 import string
 
+# admin dashboard
+def admin_dashboard(request):
+    if not is_admin(request):
+        return redirect("home")
+    context = {
+        "is_admin_user": is_admin(request),
+    }
+    return render(request, "adminpanel/dashboard.html", context)
+
+
+# manage users
+def manage_users(request):
+    if not is_admin(request):
+        return redirect("home")
+
+    users = TblUser.objects.all()
+
+    context = {
+        "users": users,
+    }
+
+    return render(request, "adminpanel/manage_users.html", context)
+
+
+# reset a users password to default
+def reset_user_password(request, user_id):
+    if not is_admin(request):
+        return redirect("home")
+
+    if request.method == "POST":
+        user = TblUser.objects.get(id=user_id)
+        # stop admins from resetting own password in manage users
+        if user.id == request.session.get("user_id"):
+            return redirect("manage_users")
+        user.password = make_password("Password123")
+        user.save(update_fields=["password"])
+    return redirect("manage_users")
+
+
+# changes users status to active/inactive
+def toggle_user_active(request, user_id):
+    if not is_admin(request):
+        return redirect("home")
+
+    if request.method == "POST":
+        user = TblUser.objects.get(id=user_id)
+        user.active = not user.active
+        user.save(update_fields=["active"])
+
+    return redirect("manage_users")
+
+
+# change user role
+def change_user_role(request, user_id):
+    if not is_admin(request):
+        return redirect("home")
+
+    if request.method == "POST":
+        user = TblUser.objects.get(id=user_id)
+        new_role = request.POST.get("role")
+
+        if new_role in ["User", "Admin", "Team Leader", "Department Head"]:
+            user.role = new_role
+            user.save(update_fields=["role"])
+
+    return redirect("manage_users")
+
+
+# create a user
+def add_user(request):
+    if not is_admin(request):
+        return redirect("home")
+
+    if request.method == "POST":
+        TblUser.objects.create(
+            fname=request.POST.get("fname"),
+            sname=request.POST.get("sname"),
+            uname=request.POST.get("uname"),
+            email=request.POST.get("email"),
+            role=request.POST.get("role"),
+            active=True,
+            created=timezone.now(),
+            password=make_password("Password123"),
+        )
+    return redirect("manage_users")
+
+
+# delete a user
+
+
+def delete_user(request, user_id):
+    if not is_admin(request):
+        return redirect("home")
+
+    if request.method == "POST":
+        user = TblUser.objects.get(id=user_id)
+
+        # prevents admins from deleting their own account
+        if user.id != request.session.get("user_id"):
+            user.delete()
+    return redirect("manage_users")
+
+
+
+###################################################
 
 def is_admin(request):
     user_id = request.session.get('user_id')
@@ -27,17 +137,7 @@ def generate_password(length=10):
     return ''.join(secrets.choice(chars) for _ in range(length))
 
 
-# ─── DASHBOARD ──────────────────────────────────────────
-
-def admin_dashboard(request):
-    if not is_admin(request):
-        return redirect("home")
-    context = {
-        "is_admin_user": is_admin(request),
-    }
-    return render(request, "adminpanel/dashboard.html", context)
-
-
+# Main admin panel page — loads all data for read/update/delete tabs
 def admin_panel_view(request):
     if not is_admin(request):
         return redirect('login')
@@ -47,124 +147,12 @@ def admin_panel_view(request):
         'departments': TblDepartment.objects.all(),
         'projects': TblProject.objects.all(),
         'dependencies': TblDependencies.objects.all(),
-        'current_user_id': request.session.get('user_id'),
+        'current_user_id': request.session.get('user_id'),  # add this
     }
     return render(request, 'admin_panel/index.html', context)
 
 
-# ─── MANAGE PAGES ───────────────────────────────────────
-
-def manage_users(request):
-    if not is_admin(request):
-        return redirect("home")
-    return render(request, "adminpanel/manage_users.html", {
-        "users": TblUser.objects.all(),
-        "teams": TblTeam.objects.all(),
-    })
-
-
-def manage_teams(request):
-    if not is_admin(request):
-        return redirect("home")
-    return render(request, "adminpanel/manage_teams.html", {
-        "teams": TblTeam.objects.all(),
-        "users": TblUser.objects.all(),
-        "departments": TblDepartment.objects.all(),
-    })
-
-
-def manage_departments(request):
-    if not is_admin(request):
-        return redirect("home")
-    return render(request, "adminpanel/manage_departments.html", {
-        "departments": TblDepartment.objects.all(),
-        "users": TblUser.objects.all(),
-    })
-
-
-def manage_projects(request):
-    if not is_admin(request):
-        return redirect("home")
-    return render(request, "adminpanel/manage_projects.html", {
-        "projects": TblProject.objects.all(),
-        "teams": TblTeam.objects.all(),
-    })
-
-
-def manage_dependencies(request):
-    if not is_admin(request):
-        return redirect("home")
-    return render(request, "adminpanel/manage_dependencies.html", {
-        "dependencies": TblDependencies.objects.all(),
-        "teams": TblTeam.objects.all(),
-    })
-
-
-# ─── LEGACY USER MANAGEMENT (kept for existing URL references) ──
-
-def reset_user_password(request, user_id):
-    if not is_admin(request):
-        return redirect("home")
-    if request.method == "POST":
-        user = TblUser.objects.get(id=user_id)
-        if user.id == request.session.get("user_id"):
-            return redirect("manage_users")
-        user.password = make_password("Password123")
-        user.save(update_fields=["password"])
-    return redirect("manage_users")
-
-
-def toggle_user_active(request, user_id):
-    if not is_admin(request):
-        return redirect("home")
-    if request.method == "POST":
-        user = TblUser.objects.get(id=user_id)
-        user.active = not user.active
-        user.save(update_fields=["active"])
-    return redirect("manage_users")
-
-
-def change_user_role(request, user_id):
-    if not is_admin(request):
-        return redirect("home")
-    if request.method == "POST":
-        user = TblUser.objects.get(id=user_id)
-        new_role = request.POST.get("role")
-        if new_role in ["User", "Admin", "Team Leader", "Department Head"]:
-            user.role = new_role
-            user.save(update_fields=["role"])
-    return redirect("manage_users")
-
-
-def add_user(request):
-    if not is_admin(request):
-        return redirect("home")
-    if request.method == "POST":
-        TblUser.objects.create(
-            fname=request.POST.get("fname"),
-            sname=request.POST.get("sname"),
-            uname=request.POST.get("uname"),
-            email=request.POST.get("email"),
-            role=request.POST.get("role"),
-            active=True,
-            created=timezone.now(),
-            password=make_password("Password123"),
-        )
-    return redirect("manage_users")
-
-
-def delete_user(request, user_id):
-    if not is_admin(request):
-        return redirect("home")
-    if request.method == "POST":
-        user = TblUser.objects.get(id=user_id)
-        if user.id != request.session.get("user_id"):
-            user.delete()
-    return redirect("manage_users")
-
-
 # ─── USER ───────────────────────────────────────────────
-
 def user_create_view(request):
     if not is_admin(request):
         return redirect('login')
@@ -177,7 +165,7 @@ def user_create_view(request):
         elif TblUser.objects.filter(email=email).exists():
             error = "Email already exists"
         if error:
-            return redirect(f"{request.META.get('HTTP_REFERER', '/admin-panel/users/')}?error={error}")
+            return redirect(f"{request.META.get('HTTP_REFERER', '/admin-panel/')}?error={error}#create")
         raw_password = generate_password()
         TblUser.objects.create(
             fname=request.POST.get('fname'),
@@ -190,8 +178,8 @@ def user_create_view(request):
             created=timezone.now(),
             active=True
         )
-        return redirect(f"/admin-panel/users/?created_password={raw_password}&created_uname={uname}")
-    return redirect('manage_users')
+        return redirect(f"/admin-panel/?created_password={raw_password}&created_uname={uname}#create")
+    return redirect('admin_panel')
 
 
 def user_edit_view(request, user_id):
@@ -206,21 +194,18 @@ def user_edit_view(request, user_id):
         user.team_id = request.POST.get('team') or None
         user.active = request.POST.get('active') == 'on'
         user.save()
-    return redirect('manage_users')
+    return redirect('admin_panel')
 
 
 def user_delete_view(request, user_id):
     if not is_admin(request):
         return redirect('login')
     if request.method == 'POST':
-        user = get_object_or_404(TblUser, id=user_id)
-        if user.id != request.session.get('user_id'):
-            user.delete()
-    return redirect('manage_users')
+        get_object_or_404(TblUser, id=user_id).delete()
+    return redirect('admin_panel')
 
 
 # ─── TEAM ───────────────────────────────────────────────
-
 def team_create_view(request):
     if not is_admin(request):
         return redirect('login')
@@ -234,7 +219,7 @@ def team_create_view(request):
             slack=request.POST.get('slack'),
             wiki=request.POST.get('wiki'),
         )
-    return redirect('manage_teams')
+    return redirect('admin_panel')
 
 
 def team_edit_view(request, team_id):
@@ -250,7 +235,7 @@ def team_edit_view(request, team_id):
         team.slack = request.POST.get('slack')
         team.wiki = request.POST.get('wiki')
         team.save()
-    return redirect('manage_teams')
+    return redirect('admin_panel')
 
 
 def team_delete_view(request, team_id):
@@ -258,11 +243,10 @@ def team_delete_view(request, team_id):
         return redirect('login')
     if request.method == 'POST':
         get_object_or_404(TblTeam, id=team_id).delete()
-    return redirect('manage_teams')
+    return redirect('admin_panel')
 
 
 # ─── DEPARTMENT ─────────────────────────────────────────
-
 def department_create_view(request):
     if not is_admin(request):
         return redirect('login')
@@ -271,7 +255,7 @@ def department_create_view(request):
             name=request.POST.get('name'),
             department_head_id=request.POST.get('department_head') or None,
         )
-    return redirect('manage_departments')
+    return redirect('admin_panel')
 
 
 def department_edit_view(request, dept_id):
@@ -282,7 +266,7 @@ def department_edit_view(request, dept_id):
         dept.name = request.POST.get('name')
         dept.department_head_id = request.POST.get('department_head') or None
         dept.save()
-    return redirect('manage_departments')
+    return redirect('admin_panel')
 
 
 def department_delete_view(request, dept_id):
@@ -290,11 +274,10 @@ def department_delete_view(request, dept_id):
         return redirect('login')
     if request.method == 'POST':
         get_object_or_404(TblDepartment, id=dept_id).delete()
-    return redirect('manage_departments')
+    return redirect('admin_panel')
 
 
 # ─── PROJECT ────────────────────────────────────────────
-
 def project_create_view(request):
     if not is_admin(request):
         return redirect('login')
@@ -308,7 +291,7 @@ def project_create_view(request):
             created=timezone.now(),
             status=request.POST.get('status'),
         )
-    return redirect('manage_projects')
+    return redirect('admin_panel')
 
 
 def project_edit_view(request, project_id):
@@ -323,7 +306,7 @@ def project_edit_view(request, project_id):
         project.jira_board = request.POST.get('jira_board')
         project.status = request.POST.get('status')
         project.save()
-    return redirect('manage_projects')
+    return redirect('admin_panel')
 
 
 def project_delete_view(request, project_id):
@@ -331,11 +314,10 @@ def project_delete_view(request, project_id):
         return redirect('login')
     if request.method == 'POST':
         get_object_or_404(TblProject, id=project_id).delete()
-    return redirect('manage_projects')
+    return redirect('admin_panel')
 
 
 # ─── DEPENDENCY ─────────────────────────────────────────
-
 def dependency_create_view(request):
     if not is_admin(request):
         return redirect('login')
@@ -346,7 +328,7 @@ def dependency_create_view(request):
             team_id=request.POST.get('team') or None,
             type=request.POST.get('type'),
         )
-    return redirect('manage_dependencies')
+    return redirect('admin_panel')
 
 
 def dependency_edit_view(request, dep_id):
@@ -359,7 +341,7 @@ def dependency_edit_view(request, dep_id):
         dep.team_id = request.POST.get('team') or None
         dep.type = request.POST.get('type')
         dep.save()
-    return redirect('manage_dependencies')
+    return redirect('admin_panel')
 
 
 def dependency_delete_view(request, dep_id):
@@ -367,4 +349,4 @@ def dependency_delete_view(request, dep_id):
         return redirect('login')
     if request.method == 'POST':
         get_object_or_404(TblDependencies, id=dep_id).delete()
-    return redirect('manage_dependencies')
+    return redirect('admin_panel')
