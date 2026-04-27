@@ -1,6 +1,6 @@
 <!--
-Authors: Dervish Denaj
-Description: Schedule page for viewing and managing meetings/events
+Authors: Dervish Denaj(w1984059)
+Description: base template. Helpful for keeping a blueprint on the navbar
 -->
 {% load static %}
 <!doctype html>
@@ -8,7 +8,7 @@ Description: Schedule page for viewing and managing meetings/events
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Schedule - SKY Engineering</title>
+    <title>{% block title %}Schedule - SKY Engineering{% endblock %}</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -21,7 +21,7 @@ Description: Schedule page for viewing and managing meetings/events
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
   </head>
   <body class="bg-light">
-    <!--Top navigation bar-->
+    <!--top navigation bar-->
     <nav class="navbar bg-white border-bottom">
       <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'home' %}">
@@ -41,7 +41,7 @@ Description: Schedule page for viewing and managing meetings/events
 
     <div class="container-fluid">
       <div class="row">
-        <!--Side Menu-->
+        <!-- Nav bar on the side-->
         <aside class="col-md-2 col-12 bg-white border-end p-4">
           <h5 class="mb-4">Menu</h5>
           <ul class="nav flex-column gap-2">
@@ -69,6 +69,7 @@ Description: Schedule page for viewing and managing meetings/events
             <li class="nav-item">
               <a href="#" class="nav-link">Profile</a>
             </li>
+            <!-- Admin link only visible to users with admin role -->
             {% if is_admin_user %}
             <li class="nav-item">
               <a href="{% url 'admin_dashboard' %}" class="nav-link">Admin</a>
@@ -77,43 +78,9 @@ Description: Schedule page for viewing and managing meetings/events
           </ul>
         </aside>
 
-        <!--Schedule main content-->
+        <!--Page content-->
         <main class="col-md-10 col-12 p-5">
-          <h1 class="mb-3">Schedule</h1>
-          <p class="text-muted">
-            View and manage your upcoming meetings and events.
-          </p>
-
-          <!--Upcoming events table-->
-          <section class="card shadow-sm border-0 mt-4">
-            <div class="card-body">
-              <h2 class="h4 mb-3">Upcoming Events</h2>
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Title</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Location</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for event in events %}
-                  <tr>
-                    <td>{{ event.title }}</td>
-                    <td>{{ event.date }}</td>
-                    <td>{{ event.time }}</td>
-                    <td>{{ event.location }}</td>
-                  </tr>
-                  {% empty %}
-                  <tr>
-                    <td colspan="4">No upcoming events scheduled.</td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-          </section>
+          {% block content %}{% endblock %}
         </main>
       </div>
     </div>

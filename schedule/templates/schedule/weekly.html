@@ -1,0 +1,51 @@
+<!--
+Authors: Dervish Denaj(w1984059)
+Description: Weekly schedule view
+-->
+{% extends 'schedule/base.html' %}
+
+{% block title %}Weekly Schedule - SKY Engineering{% endblock %}
+
+{% block content %}
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <h1 class="mb-1">Weekly View</h1>
+      <p class="text-muted mb-0">{{ week_start }} &ndash; {{ week_end }}</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'schedule' %}" class="btn btn-outline-secondary btn-sm">All Events</a>
+      <a href="{% url 'schedule_monthly' %}" class="btn btn-outline-secondary btn-sm">Monthly View</a>
+      <a href="{% url 'schedule_create' %}" class="btn btn-gradient btn-sm">+ New Meeting</a>
+    </div>
+  </div>
+
+  <section class="card shadow-sm border-0 mt-4">
+    <div class="card-body">
+      <h2 class="h4 mb-3">Meetings this week</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Meeting Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for event in events %}
+          <tr>
+            <td>{{ event.title }}</td>
+            <td>{{ event.date }}</td>
+            <td>{{ event.time }}</td>
+            <td>{% if event.meeting_link %}<a href="{{ event.meeting_link }}" target="_blank" rel="noopener">Join</a>{% else %}-{% endif %}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4">No meetings scheduled this week.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}
