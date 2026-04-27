@@ -81,10 +81,10 @@ Decription: Main reports page to display table data
         <main class="col-md-10 col-12 p-5">
           <h1>Reports Dashboard</h1>
           <a
-            href="{% url 'export_team_report_csv' %}"
+            href="{% url 'export_whole_report_csv' %}"
             class="btn btn-primary mb-4"
           >
-            Download Team Report (csv)
+            Download Comprehensive Report
           </a>
 
           <a
@@ -154,8 +154,18 @@ Decription: Main reports page to display table data
           <!--Department reports-->
           <section class="card shadow-sm border-0 mt-4">
             <div class="card-body">
-              <h2 class="h4 mb-3">Teams per department</h2>
-
+              
+              <div
+                class="d-flex justify-content-between align-items-center mt-4"
+              >
+                <h2 class="h4 mb-3">Teams per department</h2>
+                <a
+                  href="{% url 'export_department_report_csv' %}"
+                  class="btn btn-sm btn-outline-success"
+                >
+                  Download this table
+                </a>
+              </div>
               <table class="table table-striped">
                 <thead>
                   <tr>
@@ -184,7 +194,17 @@ Decription: Main reports page to display table data
 
           <section class="card shadow-sm border-0 mt-4">
             <div class="card-body">
-              <h2 class="h4 mb-3">Projects Per Team</h2>
+                            <div
+                class="d-flex justify-content-between align-items-center mt-4"
+              >
+                <h2 class="h4 mb-3">Projects per Team Report</h2>
+                <a
+                  href="{% url 'export_project_report_csv' %}"
+                  class="btn btn-sm btn-outline-success"
+                >
+                  Download this table
+                </a>
+              </div>
 
               <table class="table table-striped">
                 <thead>
@@ -218,7 +238,17 @@ Decription: Main reports page to display table data
           <!--Dependency report-->
           <section class="card shadow-sm border-0 mt-4">
             <div class="card-body">
-              <h2 class="h4 mb-3">Dependency Report</h2>
+                            <div
+                class="d-flex justify-content-between align-items-center mt-4"
+              >
+                <h2 class="h4 mb-3">Dependency Report</h2>
+                <a
+                  href="{% url 'export_dependency_report_csv' %}"
+                  class="btn btn-sm btn-outline-success"
+                >
+                  Download this table
+                </a>
+              </div>
 
               <table class="table table-striped">
                 <thead>

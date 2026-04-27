@@ -86,7 +86,7 @@ def reports_dashboard(request):
 
 
 # create reports csv function
-def export_team_report_csv(request):
+def export_whole_report_csv(request):
     if not is_logged_in(request):
         return redirect("login")
     # downloads team report with team summary
@@ -94,7 +94,7 @@ def export_team_report_csv(request):
     csv_response["Content-Disposition"] = 'attachment; filename="Sky_Teams_Summary.csv"'
 
     csv_writer = csv.writer(csv_response)
-
+    # team reports
     csv_writer.writerow(
         [
             "Team",
@@ -185,6 +185,94 @@ def export_team_report_csv(request):
     return csv_response
 
 
+# department report
+def export_department_report_csv(request):
+    if not is_logged_in(request):
+        return redirect("login")
+
+    csv_response = HttpResponse(content_type="text/csv")
+    csv_response["Content-Disposition"] = (
+        'attachment; filename="Sky_Departments_Summary.csv"'
+    )
+
+    csv_writer = csv.writer(csv_response)
+    # department reports
+    csv_writer.writerow([])
+    csv_writer.writerow(["Teams Per Department"])
+    csv_writer.writerow(["Department", "Number of Teams"])
+
+    for department in TblDepartment.objects.all():
+        team_count = TblTeam.objects.filter(department=department).count()
+
+        csv_writer.writerow([department.name, team_count])
+
+    return csv_response
+
+
+# project report
+def export_project_report_csv(request):
+    if not is_logged_in(request):
+        return redirect("login")
+
+    csv_response = HttpResponse(content_type="text/csv")
+    csv_response["Content-Disposition"] = (
+        'attachment; filename="Sky_Projects_Summary.csv"'
+    )
+
+    csv_writer = csv.writer(csv_response)
+    # project reports
+    csv_writer.writerow([])
+    csv_writer.writerow(["Projects Per Team"])
+    csv_writer.writerow(["Team", "Projects", "Number of projects"])
+
+    for team in TblTeam.objects.all():
+        project_names_holder = TblProject.objects.filter(team=team)
+        project_count = project_names_holder.count()
+        project_names = [project.name for project in project_names_holder]
+
+        csv_writer.writerow(
+            [
+                team.name,
+                ", ".join(project_names) if project_names else "No projects",
+                project_count,
+            ]
+        )
+
+    return csv_response
+
+
+# dependency report
+def export_dependency_report_csv(request):
+    if not is_logged_in(request):
+        return redirect("login")
+
+    csv_response = HttpResponse(content_type="text/csv")
+    csv_response["Content-Disposition"] = (
+        'attachment; filename="Sky_Dependency_Summary.csv"'
+    )
+
+    csv_writer = csv.writer(csv_response)
+    # Dependency report
+    csv_writer.writerow([])
+    csv_writer.writerow(["Dependency Report"])
+    csv_writer.writerow(["Team", "Depends On", "Dependency Type", "Direction"])
+
+    for dependency in TblDependencies.objects.select_related("team").all():
+        csv_writer.writerow(
+            [
+                dependency.team.name if dependency.team else "No team",
+                dependency.dependency_team_name or "Not specified",
+                (
+                    dependency.type or "Not specified" "Downstream"
+                    if dependency.downstream
+                    else "Upstream"
+                ),
+            ]
+        )
+
+    return csv_response
+
+
 def visualisations_view(request):
     if not is_logged_in(request):
         return redirect("login")
@@ -197,28 +285,34 @@ def visualisations_view(request):
     department_report = []
     for department in TblDepartment.objects.all():
         team_count = TblTeam.objects.filter(department=department).count()
-        department_report.append({
-            "department": department.name,
-            "team_count": team_count,
-        })
+        department_report.append(
+            {
+                "department": department.name,
+                "team_count": team_count,
+            }
+        )
 
     project_report = []
     for team in TblTeam.objects.all():
         project_names_holder = TblProject.objects.filter(team=team)
-        project_report.append({
-            "team_name": team.name,
-            "projects": [p.name for p in project_names_holder],
-            "project_count": project_names_holder.count(),
-        })
+        project_report.append(
+            {
+                "team_name": team.name,
+                "projects": [p.name for p in project_names_holder],
+                "project_count": project_names_holder.count(),
+            }
+        )
 
     dependency_report = []
     for dependency in TblDependencies.objects.select_related("team").all():
-        dependency_report.append({
-            "team_name": dependency.team.name if dependency.team else "No team",
-            "depends_on": dependency.dependency_team_name or "Not specified",
-            "dependency_type": dependency.type or "Not specified",
-            "direction": "Downstream" if dependency.downstream else "Upstream",
-        })
+        dependency_report.append(
+            {
+                "team_name": dependency.team.name if dependency.team else "No team",
+                "depends_on": dependency.dependency_team_name or "Not specified",
+                "dependency_type": dependency.type or "Not specified",
+                "direction": "Downstream" if dependency.downstream else "Upstream",
+            }
+        )
 
     context = {
         "total_teams": total_teams,
