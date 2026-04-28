@@ -1,0 +1,511 @@
+<!--
+Author: [Your Name]
+Description: Team detail page — full info for a single team including mission, manager,
+             members, skills, code repos, contact channels and upstream/downstream dependencies.
+-->
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ team.name }} — SKY Engineering</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <style>
+      :root {
+        --sky-pink: #e91e8c;
+        --sky-gradient: linear-gradient(135deg, #e91e8c, #c2185b);
+        --sky-blue: #0072c6;
+      }
+
+      .nav-link-active { color: #e91e8c !important; font-weight: 600; }
+
+      /* Detail header banner */
+      .team-header {
+        background: var(--sky-gradient);
+        color: #fff;
+        border-radius: 10px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 1.5rem;
+      }
+      .team-header h2 { font-weight: 700; margin-bottom: 0.25rem; }
+
+      /* Info cards */
+      .info-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        height: 100%;
+      }
+      .info-card .card-header {
+        background: #f9c4df;
+        color: #333;
+        font-weight: 600;
+        border-radius: 10px 10px 0 0 !important;
+        border: none;
+        font-size: 0.9rem;
+      }
+
+      /* Skill/dep badges */
+      .skill-badge {
+        display: inline-block;
+        background: #f0e6ff;
+        color: #6a0dad;
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 0.8rem;
+        margin: 2px;
+        font-weight: 500;
+      }
+      .dep-up {
+        display: inline-block;
+        background: #d4edda;
+        color: #155724;
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 0.8rem;
+        margin: 2px;
+      }
+      .dep-down {
+        display: inline-block;
+        background: #fff3cd;
+        color: #856404;
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 0.8rem;
+        margin: 2px;
+      }
+
+      /* Member list */
+      .member-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      .member-item:last-child { border-bottom: none; }
+      .member-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--sky-gradient);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        flex-shrink: 0;
+      }
+
+      /* Action buttons */
+      .btn-sky {
+        background: var(--sky-gradient);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 0.45rem 1.1rem;
+        font-size: 0.875rem;
+        transition: opacity 0.2s;
+      }
+      .btn-sky:hover { opacity: 0.85; color: #fff; }
+
+      .modal-header-sky { background: var(--sky-gradient); color: #fff; }
+      .modal-header-sky .btn-close { filter: invert(1); }
+    </style>
+  </head>
+
+  <body class="bg-light">
+
+    <!-- ── Top Navbar ── -->
+    <nav class="navbar bg-white border-bottom">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">
+          <img src="{% static 'media/logo.png' %}" alt="SKY Logo" height="40" />
+        </a>
+        <div class="d-flex align-items-center gap-3">
+          <span class="fw-semibold text-primary">Engineering Portal</span>
+          <form action="{% url 'logout' %}" method="post" class="m-0">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+
+        <!-- ── Sidebar ── -->
+        <aside class="col-md-2 col-12 bg-white border-end p-4" style="min-height: calc(100vh - 58px);">
+          <h5 class="mb-4">Menu</h5>
+          <ul class="nav flex-column gap-2">
+            <li class="nav-item"><a href="{% url 'home' %}" class="nav-link">Dashboard</a></li>
+            <li class="nav-item"><a href="{% url 'teams_list' %}" class="nav-link nav-link-active">Teams</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Departments</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Organisation</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Messages</a></li>
+            <li class="nav-item"><a href="{% url 'schedule' %}" class="nav-link">Schedule</a></li>
+            <li class="nav-item"><a href="{% url 'reports_dashboard' %}" class="nav-link">Reports</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Profile</a></li>
+            {% if is_admin_user %}
+            <li class="nav-item"><a href="{% url 'admin_dashboard' %}" class="nav-link">Admin</a></li>
+            {% endif %}
+            <li class="nav-item mt-3">
+              <form action="{% url 'logout' %}" method="post" class="m-0">
+                {% csrf_token %}
+                <button type="submit" class="nav-link btn btn-link text-danger p-0">Logout</button>
+              </form>
+            </li>
+          </ul>
+        </aside>
+
+        <!-- ── Main Content ── -->
+        <main class="col-md-10 col-12 p-4">
+
+          <!-- Back link -->
+          <a href="{% url 'teams_list' %}" class="text-decoration-none d-inline-flex align-items-center gap-1 mb-3"
+             style="color: var(--sky-pink); font-size: 0.9rem;">
+            <span class="material-symbols-rounded" style="font-size:18px;">arrow_back</span>
+            Back to Teams
+          </a>
+
+          <!-- Team Header Banner -->
+          <div class="team-header">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+              <div>
+                <h2>{{ team.name }}</h2>
+                <span class="badge bg-white text-dark me-2">{{ team.department.name|default:"No Department" }}</span>
+                {% if team.agile_practices %}
+                  <span class="badge" style="background: rgba(255,255,255,0.2);">{{ team.agile_practices }}</span>
+                {% endif %}
+              </div>
+              <div class="d-flex gap-2">
+                <!-- Email Button -->
+                <button class="btn btn-light btn-sm d-flex align-items-center gap-1"
+                        data-bs-toggle="modal" data-bs-target="#emailModal">
+                  <span class="material-symbols-rounded" style="font-size:16px;">mail</span>
+                  Email Team
+                </button>
+                <!-- Schedule Button -->
+                <button class="btn btn-light btn-sm d-flex align-items-center gap-1"
+                        data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                  <span class="material-symbols-rounded" style="font-size:16px;">calendar_add_on</span>
+                  Schedule Meeting
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Info Grid ── -->
+          <div class="row g-3">
+
+            <!-- Mission / Description -->
+            <div class="col-md-8">
+              <div class="card info-card">
+                <div class="card-header">
+                  <span class="material-symbols-rounded me-1" style="font-size:16px; vertical-align:middle;">flag</span>
+                  Team Mission & Responsibilities
+                </div>
+                <div class="card-body">
+                  {% if team.description %}
+                    <p class="mb-0">{{ team.description }}</p>
+                  {% else %}
+                    <p class="text-muted fst-italic mb-0">No description provided.</p>
+                  {% endif %}
+
+                  {% if team.software_owned_and_evolved %}
+                  <hr />
+                  <p class="fw-semibold mb-1 small">Software Owned / Evolved</p>
+                  <p class="mb-0 small">{{ team.software_owned_and_evolved }}</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Manager & Contact -->
+            <div class="col-md-4">
+              <div class="card info-card">
+                <div class="card-header">
+                  <span class="material-symbols-rounded me-1" style="font-size:16px; vertical-align:middle;">person</span>
+                  Manager & Contact
+                </div>
+                <div class="card-body">
+                  {% if team.team_leader %}
+                    <p class="fw-semibold mb-1">
+                      {{ team.team_leader.fname }} {{ team.team_leader.sname|default:"" }}
+                    </p>
+                    <p class="small text-muted mb-2">{{ team.team_leader.role|default:"Team Manager" }}</p>
+                    {% if team.team_leader.email %}
+                      <a href="mailto:{{ team.team_leader.email }}" class="d-block small mb-1">
+                        <span class="material-symbols-rounded" style="font-size:14px; vertical-align:middle;">mail</span>
+                        {{ team.team_leader.email }}
+                      </a>
+                    {% endif %}
+                  {% else %}
+                    <p class="text-muted fst-italic">No manager assigned.</p>
+                  {% endif %}
+
+                  {% if team.slack %}
+                  <hr class="my-2"/>
+                  <p class="small mb-1 fw-semibold">Slack / Contact Channel</p>
+                  <p class="small mb-0">{{ team.slack }}</p>
+                  {% endif %}
+
+                  {% if team.wiki %}
+                  <hr class="my-2"/>
+                  <p class="small mb-1 fw-semibold">Wiki</p>
+                  <a href="{{ team.wiki }}" target="_blank" class="small">{{ team.wiki }}</a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Team Members -->
+            <div class="col-md-4">
+              <div class="card info-card">
+                <div class="card-header">
+                  <span class="material-symbols-rounded me-1" style="font-size:16px; vertical-align:middle;">group</span>
+                  Team Members ({{ members.count }})
+                </div>
+                <div class="card-body">
+                  {% for member in members %}
+                  <div class="member-item">
+                    <div class="member-avatar">{{ member.fname|first }}{{ member.sname|first|default:"" }}</div>
+                    <div>
+                      <div class="fw-semibold small">{{ member.fname }} {{ member.sname|default:"" }}</div>
+                      <div class="text-muted" style="font-size:0.75rem;">{{ member.role|default:"Engineer" }}</div>
+                    </div>
+                  </div>
+                  {% empty %}
+                    <p class="text-muted fst-italic mb-0 small">No members listed.</p>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Skills & Technologies -->
+            <div class="col-md-4">
+              <div class="card info-card">
+                <div class="card-header">
+                  <span class="material-symbols-rounded me-1" style="font-size:16px; vertical-align:middle;">code</span>
+                  Skills & Technologies
+                </div>
+                <div class="card-body">
+                  {% if skills %}
+                    {% for skill in skills %}
+                      <span class="skill-badge">{{ skill }}</span>
+                    {% endfor %}
+                  {% else %}
+                    <p class="text-muted fst-italic mb-0 small">No skills listed.</p>
+                  {% endif %}
+
+                  {% if team.versioning %}
+                  <hr class="my-2" />
+                  <p class="small fw-semibold mb-1">Version Control</p>
+                  <p class="small mb-0">{{ team.versioning }}</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Code Repositories -->
+            <div class="col-md-4">
+              <div class="card info-card">
+                <div class="card-header">
+                  <span class="material-symbols-rounded me-1" style="font-size:16px; vertical-align:middle;">folder_code</span>
+                  Code Repositories
+                </div>
+                <div class="card-body">
+                  {% if team.wiki %}
+                    <a href="{{ team.wiki }}" target="_blank" class="d-flex align-items-center gap-1 small mb-2">
+                      <span class="material-symbols-rounded" style="font-size:14px;">open_in_new</span>
+                      Wiki / Docs
+                    </a>
+                  {% endif %}
+                  {% if team.software_owned_and_evolved %}
+                    <p class="small mb-0 text-muted">{{ team.software_owned_and_evolved }}</p>
+                  {% else %}
+                    <p class="text-muted fst-italic mb-0 small">No repositories listed.</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Dependencies -->
+            <div class="col-md-6">
+              <div class="card info-card">
+                <div class="card-header">
+                  <span class="material-symbols-rounded me-1" style="font-size:16px; vertical-align:middle;">account_tree</span>
+                  Upstream Dependencies
+                </div>
+                <div class="card-body">
+                  {% if upstream_deps %}
+                    {% for dep in upstream_deps %}
+                      <span class="dep-up">↑ {{ dep.dependency_team_name|default:"Unknown Team" }}{% if dep.type %} — {{ dep.type }}{% endif %}</span>
+                    {% endfor %}
+                  {% else %}
+                    <p class="text-muted fst-italic mb-0 small">No upstream dependencies.</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="card info-card">
+                <div class="card-header">
+                  <span class="material-symbols-rounded me-1" style="font-size:16px; vertical-align:middle;">account_tree</span>
+                  Downstream Dependencies
+                </div>
+                <div class="card-body">
+                  {% if downstream_deps %}
+                    {% for dep in downstream_deps %}
+                      <span class="dep-down">↓ {{ dep.dependency_team_name|default:"Unknown Team" }}{% if dep.type %} — {{ dep.type }}{% endif %}</span>
+                    {% endfor %}
+                  {% else %}
+                    <p class="text-muted fst-italic mb-0 small">No downstream dependencies.</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Additional Info -->
+            {% if team.daily_standup or team.active_projects %}
+            <div class="col-md-12">
+              <div class="card info-card">
+                <div class="card-header">
+                  <span class="material-symbols-rounded me-1" style="font-size:16px; vertical-align:middle;">info</span>
+                  Additional Info
+                </div>
+                <div class="card-body d-flex gap-4 flex-wrap">
+                  {% if team.active_projects %}
+                    <div>
+                      <p class="small text-muted mb-0">Active Projects</p>
+                      <p class="fw-bold mb-0">{{ team.active_projects }}</p>
+                    </div>
+                  {% endif %}
+                  {% if team.daily_standup %}
+                    <div>
+                      <p class="small text-muted mb-0">Daily Standup</p>
+                      <p class="fw-bold mb-0">{{ team.daily_standup|time:"H:i" }}</p>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+          </div><!-- /row -->
+        </main>
+      </div>
+    </div>
+
+    <!-- ── Email Modal ── -->
+    <div class="modal fade" id="emailModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header modal-header-sky">
+            <h5 class="modal-title">
+              <span class="material-symbols-rounded me-1" style="font-size:20px; vertical-align:middle;">mail</span>
+              Email {{ team.name }}
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form onsubmit="sendEmail(event)">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">To</label>
+                <input type="text" class="form-control"
+                       value="{{ team.name }} Team{% if team.slack %} &lt;{{ team.slack }}&gt;{% endif %}" readonly />
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Subject</label>
+                <input type="text" class="form-control" id="detailEmailSubject" placeholder="Enter subject..." required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Message</label>
+                <textarea class="form-control" id="detailEmailBody" rows="4" placeholder="Type your message..." required></textarea>
+              </div>
+              <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-sky btn-sm">
+                  <span class="material-symbols-rounded" style="font-size:14px; vertical-align:middle;">send</span> Send
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Schedule Meeting Modal ── -->
+    <div class="modal fade" id="scheduleModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header modal-header-sky">
+            <h5 class="modal-title">
+              <span class="material-symbols-rounded me-1" style="font-size:20px; vertical-align:middle;">calendar_add_on</span>
+              Schedule Meeting with {{ team.name }}
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form action="{% url 'schedule' %}" method="GET">
+              <input type="hidden" name="team" value="{{ team.name }}" />
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Meeting Title</label>
+                <input type="text" name="title" class="form-control"
+                       placeholder="e.g. Sync with {{ team.name }}" required />
+              </div>
+              <div class="row mb-3">
+                <div class="col">
+                  <label class="form-label fw-semibold">Date</label>
+                  <input type="date" name="date" class="form-control" required />
+                </div>
+                <div class="col">
+                  <label class="form-label fw-semibold">Time</label>
+                  <input type="time" name="time" class="form-control" required />
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Platform</label>
+                <select name="platform" class="form-select">
+                  <option value="Teams">Microsoft Teams</option>
+                  <option value="Zoom">Zoom</option>
+                  <option value="Slack">Slack Huddle</option>
+                  <option value="In-person">In Person</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Notes</label>
+                <textarea name="notes" class="form-control" rows="2" placeholder="Optional agenda..."></textarea>
+              </div>
+              <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <a href="{% url 'schedule' %}" class="btn btn-sky btn-sm">
+                  <span class="material-symbols-rounded" style="font-size:14px; vertical-align:middle;">calendar_add_on</span>
+                  Go to Schedule
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function sendEmail(e) {
+        e.preventDefault();
+        const subject = encodeURIComponent(document.getElementById('detailEmailSubject').value);
+        const body = encodeURIComponent(document.getElementById('detailEmailBody').value);
+        const to = '{{ team.slack|escapejs }}';
+        window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+      }
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,522 @@
+<!--
+Author: [Your Name]
+Description: Teams list page — shows all engineering teams in a searchable table.
+             Includes email and schedule meeting modals, skills badges, and dependency info.
+             Matches the Sky Engineering storyboard design.
+-->
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teams — SKY Engineering</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <style>
+      /* ── Teams page specific styles ── */
+      :root {
+        --sky-pink: #e91e8c;
+        --sky-pink-light: #f8d7ea;
+        --sky-blue: #0072c6;
+        --sky-gradient: linear-gradient(135deg, #e91e8c, #c2185b);
+      }
+
+      /* Search bar */
+      .search-wrapper {
+        position: relative;
+      }
+      .search-wrapper input {
+        border-radius: 50px;
+        padding: 0.6rem 3rem 0.6rem 1.2rem;
+        border: 1px solid #dee2e6;
+        width: 100%;
+        font-size: 0.95rem;
+        transition: box-shadow 0.2s;
+      }
+      .search-wrapper input:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(233, 30, 140, 0.15);
+        border-color: var(--sky-pink);
+      }
+      .search-wrapper .search-btn {
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--sky-gradient);
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      .search-wrapper .search-btn:hover { opacity: 0.85; }
+
+      /* Table header */
+      .table-header-bar {
+        background: var(--sky-gradient);
+        color: #fff;
+        padding: 0.75rem 1rem;
+        border-radius: 6px 6px 0 0;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+
+      /* Table */
+      .teams-table th {
+        background: #f9c4df;
+        color: #333;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border-top: none;
+      }
+      .teams-table td {
+        vertical-align: middle;
+        font-size: 0.9rem;
+      }
+      .teams-table tbody tr:hover {
+        background-color: #fdf0f6;
+      }
+
+      /* Skills badges */
+      .skill-badge {
+        display: inline-block;
+        background: #f0e6ff;
+        color: #6a0dad;
+        border-radius: 20px;
+        padding: 2px 10px;
+        font-size: 0.75rem;
+        margin: 1px;
+        font-weight: 500;
+      }
+
+      /* Dependency tags */
+      .dep-up {
+        display: inline-block;
+        background: #d4edda;
+        color: #155724;
+        border-radius: 20px;
+        padding: 2px 8px;
+        font-size: 0.72rem;
+        margin: 1px;
+      }
+      .dep-down {
+        display: inline-block;
+        background: #fff3cd;
+        color: #856404;
+        border-radius: 20px;
+        padding: 2px 8px;
+        font-size: 0.72rem;
+        margin: 1px;
+      }
+
+      /* Action buttons */
+      .btn-action {
+        font-size: 0.78rem;
+        padding: 3px 10px;
+        border-radius: 4px;
+        margin: 1px;
+        white-space: nowrap;
+      }
+      .learn-more-link {
+        color: var(--sky-blue);
+        font-size: 0.85rem;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .learn-more-link:hover { text-decoration: underline; }
+
+      /* Active nav */
+      .nav-link-active {
+        color: #e91e8c !important;
+        font-weight: 600;
+      }
+
+      /* No results */
+      .no-results {
+        text-align: center;
+        padding: 2rem;
+        color: #6c757d;
+      }
+
+      /* Modal styling */
+      .modal-header-sky {
+        background: var(--sky-gradient);
+        color: #fff;
+      }
+      .modal-header-sky .btn-close {
+        filter: invert(1);
+      }
+    </style>
+  </head>
+
+  <body class="bg-light">
+
+    <!-- ── Top Navigation Bar ── -->
+    <nav class="navbar bg-white border-bottom">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">
+          <img src="{% static 'media/logo.png' %}" alt="SKY Logo" height="40" />
+        </a>
+        <div class="d-flex align-items-center gap-3">
+          <span class="fw-semibold text-primary">Engineering Portal</span>
+          <form action="{% url 'logout' %}" method="post" class="m-0">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+
+        <!-- ── Sidebar ── -->
+        <aside class="col-md-2 col-12 bg-white border-end p-4" style="min-height: calc(100vh - 58px);">
+          <h5 class="mb-4">Menu</h5>
+          <ul class="nav flex-column gap-2">
+            <li class="nav-item">
+              <a href="{% url 'home' %}" class="nav-link">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'teams_list' %}" class="nav-link nav-link-active">Teams</a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">Departments</a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">Organisation</a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">Messages</a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'schedule' %}" class="nav-link">Schedule</a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'reports_dashboard' %}" class="nav-link">Reports</a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">Profile</a>
+            </li>
+            {% if is_admin_user %}
+            <li class="nav-item">
+              <a href="{% url 'admin_dashboard' %}" class="nav-link">Admin</a>
+            </li>
+            {% endif %}
+            <li class="nav-item mt-3">
+              <form action="{% url 'logout' %}" method="post" class="m-0">
+                {% csrf_token %}
+                <button type="submit" class="nav-link btn btn-link text-danger p-0">Logout</button>
+              </form>
+            </li>
+          </ul>
+        </aside>
+
+        <!-- ── Main Content ── -->
+        <main class="col-md-10 col-12 p-4">
+          <h4 class="mb-1 fw-semibold">Teams Page</h4>
+          <p class="text-muted small mb-3">Teams page that shows all the teams.</p>
+
+          <!-- Search Bar -->
+          <div class="search-wrapper mb-4" style="max-width: 700px;">
+            <form method="GET" action="{% url 'teams_list' %}">
+              <input
+                type="text"
+                name="q"
+                value="{{ query }}"
+                placeholder="Search Anything..."
+                autocomplete="off"
+                id="searchInput"
+              />
+              <button type="submit" class="search-btn" aria-label="Search">
+                <span class="material-symbols-rounded" style="font-size:18px;">search</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Teams Table -->
+          <div class="card border-0 shadow-sm" style="border-radius: 8px; overflow: hidden;">
+            <div class="table-header-bar">Engineering Teams</div>
+
+            {% if query %}
+            <div class="px-3 pt-2 pb-0">
+              <small class="text-muted">
+                Showing results for: <strong>"{{ query }}"</strong> —
+                <a href="{% url 'teams_list' %}" class="text-decoration-none" style="color: var(--sky-pink);">Clear</a>
+              </small>
+            </div>
+            {% endif %}
+
+            <div class="table-responsive">
+              <table class="table table-hover teams-table mb-0">
+                <thead>
+                  <tr>
+                    <th style="width:18%">Team Name</th>
+                    <th style="width:12%">Department</th>
+                    <th style="width:15%">Manager</th>
+                    <th style="width:25%">Skills</th>
+                    <th style="width:15%">Dependencies</th>
+                    <th style="width:15%">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for team in teams %}
+                  <tr>
+                    <!-- Team Name -->
+                    <td class="fw-semibold">{{ team.name }}</td>
+
+                    <!-- Department -->
+                    <td>{{ team.department.name|default:"—" }}</td>
+
+                    <!-- Manager -->
+                    <td>
+                      {% if team.team_leader %}
+                        {{ team.team_leader.fname }} {{ team.team_leader.sname|default:"" }}
+                      {% else %}
+                        <span class="text-muted fst-italic">No manager</span>
+                      {% endif %}
+                    </td>
+
+                    <!-- Skills -->
+                    <td>
+                      {% if team.skills_and_tech %}
+                        {% with skills=team.skills_and_tech %}
+                          <!-- Display up to 3 skills inline, rest hidden -->
+                          {% for skill in skills|slice:":3" %}
+                            <span class="skill-badge">{{ skill }}</span>
+                          {% empty %}
+                            <span class="text-muted small">—</span>
+                          {% endfor %}
+                        {% endwith %}
+                      {% else %}
+                        <span class="text-muted small">—</span>
+                      {% endif %}
+                    </td>
+
+                    <!-- Dependencies (upstream/downstream count) -->
+                    <td>
+                      {% with upstream=team.tbldependencies_set.all %}
+                        {% for dep in upstream %}
+                          {% if dep.upstream %}
+                            <span class="dep-up">↑ {{ dep.dependency_team_name|default:"Upstream" }}</span>
+                          {% endif %}
+                          {% if dep.downstream %}
+                            <span class="dep-down">↓ {{ dep.dependency_team_name|default:"Downstream" }}</span>
+                          {% endif %}
+                        {% empty %}
+                          <span class="text-muted small">None</span>
+                        {% endfor %}
+                      {% endwith %}
+                    </td>
+
+                    <!-- Actions -->
+                    <td>
+                      <!-- Learn More -->
+                      <a href="{% url 'team_detail' team.id %}" class="learn-more-link d-block mb-1">learn more</a>
+
+                      <!-- Email Team -->
+                      {% if team.slack %}
+                        <a href="mailto:{{ team.slack }}"
+                           class="btn btn-outline-primary btn-action d-inline-flex align-items-center gap-1">
+                          <span class="material-symbols-rounded" style="font-size:14px;">mail</span> Email
+                        </a>
+                      {% else %}
+                        <button class="btn btn-outline-secondary btn-action"
+                                data-bs-toggle="modal"
+                                data-bs-target="#emailModal{{ team.id }}">
+                          <span class="material-symbols-rounded" style="font-size:14px;">mail</span> Email
+                        </button>
+                      {% endif %}
+
+                      <!-- Schedule Meeting -->
+                      <button class="btn btn-outline-success btn-action"
+                              data-bs-toggle="modal"
+                              data-bs-target="#scheduleModal{{ team.id }}">
+                        <span class="material-symbols-rounded" style="font-size:14px;">calendar_add_on</span> Meet
+                      </button>
+                    </td>
+                  </tr>
+
+                  <!-- ── Email Modal ── -->
+                  <div class="modal fade" id="emailModal{{ team.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header modal-header-sky">
+                          <h5 class="modal-title">
+                            <span class="material-symbols-rounded me-1" style="font-size:20px; vertical-align:middle;">mail</span>
+                            Email {{ team.name }}
+                          </h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                          <form id="emailForm{{ team.id }}" onsubmit="sendEmail(event, '{{ team.name|escapejs }}', '{{ team.slack|escapejs }}')">
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold">To</label>
+                              <input type="text" class="form-control" value="{{ team.name }} Team{% if team.slack %} &lt;{{ team.slack }}&gt;{% endif %}" readonly />
+                            </div>
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold">Subject</label>
+                              <input type="text" class="form-control" id="emailSubject{{ team.id }}" placeholder="Enter subject..." required />
+                            </div>
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold">Message</label>
+                              <textarea class="form-control" id="emailBody{{ team.id }}" rows="4" placeholder="Type your message..." required></textarea>
+                            </div>
+                            <div class="d-flex justify-content-end gap-2">
+                              <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                              <button type="submit" class="btn btn-sm text-white" style="background: var(--sky-gradient);">
+                                <span class="material-symbols-rounded" style="font-size:14px; vertical-align:middle;">send</span> Send Email
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- ── Schedule Meeting Modal ── -->
+                  <div class="modal fade" id="scheduleModal{{ team.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header modal-header-sky">
+                          <h5 class="modal-title">
+                            <span class="material-symbols-rounded me-1" style="font-size:20px; vertical-align:middle;">calendar_add_on</span>
+                            Schedule Meeting with {{ team.name }}
+                          </h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                          <form action="{% url 'schedule' %}" method="GET">
+                            <input type="hidden" name="team" value="{{ team.name }}" />
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold">Team</label>
+                              <input type="text" class="form-control" value="{{ team.name }}" readonly />
+                            </div>
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold">Meeting Title</label>
+                              <input type="text" name="title" class="form-control"
+                                     placeholder="e.g. Sync with {{ team.name }}" required />
+                            </div>
+                            <div class="row mb-3">
+                              <div class="col">
+                                <label class="form-label fw-semibold">Date</label>
+                                <input type="date" name="date" class="form-control" required />
+                              </div>
+                              <div class="col">
+                                <label class="form-label fw-semibold">Time</label>
+                                <input type="time" name="time" class="form-control" required />
+                              </div>
+                            </div>
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold">Platform</label>
+                              <select name="platform" class="form-select">
+                                <option value="Teams">Microsoft Teams</option>
+                                <option value="Zoom">Zoom</option>
+                                <option value="Slack">Slack Huddle</option>
+                                <option value="In-person">In Person</option>
+                              </select>
+                            </div>
+                            <div class="mb-3">
+                              <label class="form-label fw-semibold">Notes</label>
+                              <textarea name="notes" class="form-control" rows="2" placeholder="Optional agenda or notes..."></textarea>
+                            </div>
+                            <div class="d-flex justify-content-end gap-2">
+                              <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                              <a href="{% url 'schedule' %}" class="btn btn-sm text-white" style="background: var(--sky-gradient);">
+                                <span class="material-symbols-rounded" style="font-size:14px; vertical-align:middle;">calendar_add_on</span>
+                                Go to Schedule
+                              </a>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {% empty %}
+                  <tr>
+                    <td colspan="6" class="no-results">
+                      {% if query %}
+                        <span class="material-symbols-rounded d-block mb-2" style="font-size:36px; color:#ccc;">search_off</span>
+                        No teams found matching <strong>"{{ query }}"</strong>
+                      {% else %}
+                        No teams available.
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Team count -->
+          {% if teams %}
+          <p class="text-muted small mt-2">
+            Showing {{ teams|length }} team{{ teams|length|pluralize }}
+            {% if query %}matching "{{ query }}"{% endif %}
+          </p>
+          {% endif %}
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      /**
+       * Author: [Your Name]
+       * Live search — filters table rows as user types (client-side instant filter)
+       * Falls back to server-side GET search on form submit.
+       */
+      const searchInput = document.getElementById('searchInput');
+      const tableRows = document.querySelectorAll('.teams-table tbody tr:not(.no-results-row)');
+
+      searchInput.addEventListener('input', function () {
+        const q = this.value.toLowerCase().trim();
+        let visibleCount = 0;
+
+        tableRows.forEach(row => {
+          // Skip modal rows (they don't have class but are inside the loop via modals)
+          if (row.querySelector('.modal')) return;
+
+          const text = row.textContent.toLowerCase();
+          const match = q === '' || text.includes(q);
+          row.style.display = match ? '' : 'none';
+          if (match) visibleCount++;
+        });
+      });
+
+      /**
+       * Opens mailto link for email modal form.
+       * @param {Event} e - Form submit event
+       * @param {string} teamName - The team's display name
+       * @param {string} teamEmail - Team email/slack address
+       */
+      function sendEmail(e, teamName, teamEmail) {
+        e.preventDefault();
+        const form = e.target;
+        const subjectInput = form.querySelector('[id^="emailSubject"]');
+        const bodyInput = form.querySelector('[id^="emailBody"]');
+
+        if (!subjectInput || !bodyInput) return;
+
+        const subject = encodeURIComponent(subjectInput.value);
+        const body = encodeURIComponent(bodyInput.value);
+        const to = teamEmail || '';
+
+        const mailtoLink = `mailto:${to}?subject=${subject}&body=${body}`;
+        window.location.href = mailtoLink;
+      }
+    </script>
+
+  </body>
+</html>
