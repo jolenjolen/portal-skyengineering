@@ -1,4 +1,7 @@
 """
+Authors: 
+Muhammed Hasan(w1689191): reports and adminpanel
+
 URL configuration for portal project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -15,8 +18,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('accounts.urls')),
+    path('', include('dashboard.urls')),
+    path('reports/', include('reports.urls')),
+    path('admin-panel/',include('adminpanel.urls')),
+    path('schedule/', include('schedule.urls')),
+    path('', include('teams.urls')),
 ]

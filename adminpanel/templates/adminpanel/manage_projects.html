@@ -1,0 +1,191 @@
+<!--
+Author: Jolen Mascarenhas (w2078969)
+Description: Admin Manage Projects
+-->
+
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <title>Admin Panel – Manage Projects</title>
+  </head>
+  <body class="bg-light">
+
+    <!-- Top navigation bar -->
+    <nav class="navbar bg-white border-bottom">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img src="{% static 'media/logo.png' %}" alt="SKY Logo" height="40" />
+        </a>
+        <div class="d-flex align-items-center gap-3">
+          <span class="fw-semibold text-primary">Engineering Portal</span>
+          <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-sm">Back</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Add New Project -->
+    <div class="card shadow-sm border-0 mt-4 mx-3">
+      <div class="card-body">
+        <h5 class="card-title">Add New Project</h5>
+        <form action="{% url 'project_create' %}" method="post" class="row g-3">
+          {% csrf_token %}
+          <div class="col-md-2">
+            <input type="text" name="name" class="form-control" placeholder="Project Name" required />
+          </div>
+          <div class="col-md-2">
+            <select name="team" class="form-select">
+              <option value="">No Team</option>
+              {% for team in teams %}
+                <option value="{{ team.id }}">{{ team.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-2">
+            <input type="text" name="codebase" class="form-control" placeholder="Codebase URL" />
+          </div>
+          <div class="col-md-2">
+            <input type="text" name="jira_board" class="form-control" placeholder="Jira Board URL" />
+          </div>
+          <div class="col-md-2">
+            <select name="status" class="form-select">
+              <option value="" disabled selected>Status</option>
+              <option value="active">Active</option>
+              <option value="on_hold">On Hold</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <input type="text" name="description" class="form-control" placeholder="Description" />
+          </div>
+          <div class="col-md-1">
+            <button type="submit" class="btn btn-success w-100">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Projects Table -->
+    <div class="container-fluid py-4 px-3">
+      <h1>Manage Projects</h1>
+      <table class="table table-striped mt-4 align-middle">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Team</th>
+            <th>Status</th>
+            <th>Codebase</th>
+            <th>Jira Board</th>
+            <th>Description</th>
+            <th>Created</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for project in projects %}
+          <tr>
+            <td>{{ project.name }}</td>
+            <td>{% if project.team %}{{ project.team.name }}{% else %}—{% endif %}</td>
+            <td>
+              {% if project.status == 'active' %}
+                <span class="badge bg-success">Active</span>
+              {% elif project.status == 'on_hold' %}
+                <span class="badge bg-warning text-dark">On Hold</span>
+              {% elif project.status == 'completed' %}
+                <span class="badge bg-secondary">Completed</span>
+              {% else %}
+                <span class="badge bg-light text-dark">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if project.codebase %}
+                <a href="{{ project.codebase }}" target="_blank" class="text-truncate d-inline-block" style="max-width:120px;">Link</a>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if project.jira_board %}
+                <a href="{{ project.jira_board }}" target="_blank">Link</a>
+              {% else %}—{% endif %}
+            </td>
+            <td>{{ project.description|default:"—" }}</td>
+            <td>{{ project.created|date:"d M Y" }}</td>
+
+            <!-- Edit button -->
+            <td>
+              <button class="btn btn-sm btn-outline-primary" onclick="toggleEdit({{ project.id }})">Edit</button>
+            </td>
+
+            <!-- Delete -->
+            <td>
+              <form action="{% url 'project_delete' project.id %}" method="post"
+                    onsubmit="return confirm('Delete project {{ project.name }}?')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+
+          <!-- Inline edit row -->
+          <tr id="edit-row-{{ project.id }}" style="display:none; background:#f8f9fa;">
+            <td colspan="9">
+              <form action="{% url 'project_edit' project.id %}" method="post" class="row g-2 p-2">
+                {% csrf_token %}
+                <div class="col-md-2">
+                  <label class="form-label small fw-bold">Name</label>
+                  <input type="text" name="name" class="form-control form-control-sm" value="{{ project.name }}" required />
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small fw-bold">Team</label>
+                  <select name="team" class="form-select form-select-sm">
+                    <option value="">No Team</option>
+                    {% for team in teams %}
+                      <option value="{{ team.id }}" {% if project.team_id == team.id %}selected{% endif %}>{{ team.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small fw-bold">Status</label>
+                  <select name="status" class="form-select form-select-sm">
+                    <option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="on_hold" {% if project.status == 'on_hold' %}selected{% endif %}>On Hold</option>
+                    <option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small fw-bold">Codebase URL</label>
+                  <input type="text" name="codebase" class="form-control form-control-sm" value="{{ project.codebase }}" />
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small fw-bold">Jira Board URL</label>
+                  <input type="text" name="jira_board" class="form-control form-control-sm" value="{{ project.jira_board }}" />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small fw-bold">Description</label>
+                  <input type="text" name="description" class="form-control form-control-sm" value="{{ project.description }}" />
+                </div>
+                <div class="col-md-3 d-flex align-items-end gap-2">
+                  <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="toggleEdit({{ project.id }})">Cancel</button>
+                </div>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function toggleEdit(id) {
+        const row = document.getElementById('edit-row-' + id);
+        row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+.roboto-nav-link {
+  font-family: "Roboto", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.main {
+  background-image: url("/static/media/bg.png");
+  background-size: fixed; /* or whatever you want */
+  background-position: center;
+  background-repeat: repeat;
+  height: 80vh;
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url("/static/media/bg.png");
+
+}
+
+.navbar-toggler {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* wrapper fills button and centers content */
+.icon-wrapper {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* icons stacked perfectly */
+.icon {
+    position: absolute;
+    inset: 0; /* shorthand for top/left/right/bottom: 0 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.icon.active {
+    opacity: 1;
+    transform: scale(1);
+}
+.navbar-toggler:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+}
+
+
+.hamburger-menu {
+    border: none;
+}
+
+.material-symbols-rounded {
+    color: #000; /* or whatever your default is */
+    transition: color 0.2s ease;
+}
+
+.hamburger-menu:hover .material-symbols-rounded {
+    color: #fc408d;
+}
+
+.nav-link{
+    color: #250897;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: #fc408d;
+}
+.active-link {
+    color: #fc408d;
+}
+.navbar {
+    position: sticky;
+    background-color: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.navbar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+
+    background: linear-gradient(90deg, #ff884d, #fd3c4a, #fc408d, #ce41d9, #4d51fc);
+}
+
+footer {
+    padding: 20px;
+}
+footer a{
+    color: #250897;
+    transition: color 0.2s ease;
+    margin: 20px 0px 20px 0px;
+}
+
+footer a:hover {
+    color: #fc408d;
+}
+
+.form-link{
+    color: #250897;
+    transition: color 0.2s ease;
+}
+.form-link:hover {
+    color: #fc408d;
+}
+
+form{
+    background-color: rgba(255, 255, 255, 0.60);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
