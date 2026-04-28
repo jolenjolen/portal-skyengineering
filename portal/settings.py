@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'portal.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'DBv2',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
