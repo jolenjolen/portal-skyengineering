@@ -10,19 +10,27 @@ Description: Schedule page for viewing and managing meetings/events
   <div class="d-flex align-items-center justify-content-between mb-3">
     <div>
       <h1 class="mb-1">Schedule</h1>
-      <p class="text-muted mb-0">View and manage your upcoming meetings and events.</p>
+      <p class="text-muted mb-0">
+        {% if show_past %}Past meetings{% else %}Upcoming meetings and events{% endif %}
+      </p>
     </div>
     <div class="d-flex gap-2">
       <a href="{% url 'schedule_weekly' %}" class="btn btn-outline-secondary btn-sm">Weekly View</a>
       <a href="{% url 'schedule_monthly' %}" class="btn btn-outline-secondary btn-sm">Monthly View</a>
-      <a href="{% url 'schedule_create' %}" class="btn btn-gradient btn-sm">+ New Meeting</a>
+      {% if show_past %}
+        <a href="{% url 'schedule' %}" class="btn btn-outline-secondary btn-sm">Upcoming</a>
+      {% else %}
+        <a href="{% url 'schedule' %}?view=past" class="btn btn-outline-secondary btn-sm">Past Meetings</a>
+      {% endif %}
+      {% if is_admin_user or led_team %}
+        <a href="{% url 'schedule_create' %}" class="btn btn-gradient btn-sm">+ New Meeting</a>
+      {% endif %}
     </div>
   </div>
 
-  <!--Upcoming events table-->
   <section class="card shadow-sm border-0 mt-4">
     <div class="card-body">
-      <h2 class="h4 mb-3">Upcoming Events</h2>
+      <h2 class="h4 mb-3">{% if show_past %}Past Meetings{% else %}Upcoming Events{% endif %}</h2>
       <table class="table table-striped">
         <thead>
           <tr>
@@ -30,6 +38,8 @@ Description: Schedule page for viewing and managing meetings/events
             <th>Date</th>
             <th>Time</th>
             <th>Meeting Link</th>
+            <th>Notes</th>
+            {% if is_admin_user or led_team %}<th>Actions</th>{% endif %}
           </tr>
         </thead>
         <tbody>
@@ -38,12 +48,25 @@ Description: Schedule page for viewing and managing meetings/events
             <td>{{ event.title }}</td>
             <td>{{ event.date }}</td>
             <td>{{ event.time }}</td>
-            <!-- rel="noopener" prevents the new tab from accessing this page via window.opener -->
             <td>{% if event.meeting_link %}<a href="{{ event.meeting_link }}" target="_blank" rel="noopener">Join</a>{% else %}-{% endif %}</td>
+            <td>{{ event.message|default:"-" }}</td>
+            {% if is_admin_user or led_team %}
+            <td>
+              {% if is_admin_user or event.team == led_team %}
+              <a href="{% url 'schedule_edit' event.pk %}" class="btn btn-outline-secondary btn-sm">Edit</a>
+              <form method="post" action="{% url 'schedule_delete' event.pk %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this meeting?')">Delete</button>
+              </form>
+              {% endif %}
+            </td>
+            {% endif %}
           </tr>
           {% empty %}
           <tr>
-            <td colspan="4">No upcoming events scheduled.</td>
+            <td colspan="{% if is_admin_user or led_team %}6{% else %}5{% endif %}">
+              {% if show_past %}No past meetings found.{% else %}No upcoming events scheduled.{% endif %}
+            </td>
           </tr>
           {% endfor %}
         </tbody>
