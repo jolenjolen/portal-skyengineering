@@ -1,38 +1,38 @@
 <!--
 Authors: Dervish Denaj(w1984059)
-Description: Create a new meeting
+Description: Edit an existing meeting
 -->
 {% extends 'schedule/base.html' %}
 
-{% block title %}New Meeting - SKY Engineering{% endblock %}
+{% block title %}Edit Meeting - SKY Engineering{% endblock %}
 
 {% block content %}
-  <h1 class="mb-3">New Meeting</h1>
-  <p class="text-muted">Fill in the details below to schedule a new meeting.</p>
+  <h1 class="mb-3">Edit Meeting</h1>
+  <p class="text-muted">Update the details for this meeting.</p>
 
   <div class="card shadow-sm border-0 mt-4">
     <div class="card-body">
-      <form method="post" action="{% url 'schedule_create' %}">
+      <form method="post" action="{% url 'schedule_edit' meeting.pk %}">
         {% csrf_token %}
         <div class="mb-3">
           <label class="form-label fw-semibold">Title</label>
-          <input type="text" name="title" class="form-control" placeholder="Meeting title" required />
+          <input type="text" name="title" class="form-control" value="{{ meeting.title }}" required />
         </div>
         <div class="mb-3">
           <label class="form-label fw-semibold">Date</label>
-          <input type="date" name="date" class="form-control" required />
+          <input type="date" name="date" class="form-control" value="{{ meeting.date }}" required />
         </div>
         <div class="mb-3">
           <label class="form-label fw-semibold">Time</label>
-          <input type="time" name="time" class="form-control" required />
+          <input type="time" name="time" class="form-control" value="{{ meeting.time }}" required />
         </div>
         <div class="mb-3">
           <label class="form-label fw-semibold">Meeting Link</label>
-          <input type="url" name="meeting_link" class="form-control" placeholder="Enter your meeting link..." />
+          <input type="url" name="meeting_link" class="form-control" value="{{ meeting.meeting_link }}" placeholder="Enter your meeting link..." />
         </div>
         <div class="mb-3">
           <label class="form-label fw-semibold">Notes / Message</label>
-          <input type="text" name="message" class="form-control" placeholder="Add any notes or agenda..." />
+          <input type="text" name="message" class="form-control" value="{{ meeting.message }}" />
         </div>
         <div class="mb-3">
           <label class="form-label fw-semibold">Team</label>
@@ -40,15 +40,15 @@ Description: Create a new meeting
             <select name="team" class="form-select">
               <option value="">— No team —</option>
               {% for team in teams %}
-                <option value="{{ team.pk }}">{{ team.name }}</option>
+                <option value="{{ team.pk }}" {% if team == meeting.team %}selected{% endif %}>{{ team.name }}</option>
               {% endfor %}
             </select>
           {% else %}
-            <input type="text" class="form-control" value="{{ led_team.name }}" disabled />
+            <input type="text" class="form-control" value="{{ meeting.team.name|default:'—' }}" disabled />
           {% endif %}
         </div>
         <div class="d-flex gap-2">
-          <button type="submit" class="btn btn-gradient">Save Meeting</button>
+          <button type="submit" class="btn btn-gradient">Save Changes</button>
           <a href="{% url 'schedule' %}" class="btn btn-outline-secondary">Cancel</a>
         </div>
       </form>

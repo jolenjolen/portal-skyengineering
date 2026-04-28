@@ -15,7 +15,9 @@ Description: Weekly schedule view
     <div class="d-flex gap-2">
       <a href="{% url 'schedule' %}" class="btn btn-outline-secondary btn-sm">All Events</a>
       <a href="{% url 'schedule_monthly' %}" class="btn btn-outline-secondary btn-sm">Monthly View</a>
-      <a href="{% url 'schedule_create' %}" class="btn btn-gradient btn-sm">+ New Meeting</a>
+      {% if is_admin_user or led_team %}
+        <a href="{% url 'schedule_create' %}" class="btn btn-gradient btn-sm">+ New Meeting</a>
+      {% endif %}
     </div>
   </div>
 
@@ -29,6 +31,8 @@ Description: Weekly schedule view
             <th>Date</th>
             <th>Time</th>
             <th>Meeting Link</th>
+            <th>Notes</th>
+            {% if is_admin_user or led_team %}<th>Actions</th>{% endif %}
           </tr>
         </thead>
         <tbody>
@@ -38,10 +42,22 @@ Description: Weekly schedule view
             <td>{{ event.date }}</td>
             <td>{{ event.time }}</td>
             <td>{% if event.meeting_link %}<a href="{{ event.meeting_link }}" target="_blank" rel="noopener">Join</a>{% else %}-{% endif %}</td>
+            <td>{{ event.message|default:"-" }}</td>
+            {% if is_admin_user or led_team %}
+            <td>
+              {% if is_admin_user or event.team == led_team %}
+              <a href="{% url 'schedule_edit' event.pk %}" class="btn btn-outline-secondary btn-sm">Edit</a>
+              <form method="post" action="{% url 'schedule_delete' event.pk %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this meeting?')">Delete</button>
+              </form>
+              {% endif %}
+            </td>
+            {% endif %}
           </tr>
           {% empty %}
           <tr>
-            <td colspan="4">No meetings scheduled this week.</td>
+            <td colspan="{% if is_admin_user or led_team %}6{% else %}5{% endif %}">No meetings scheduled this week.</td>
           </tr>
           {% endfor %}
         </tbody>
