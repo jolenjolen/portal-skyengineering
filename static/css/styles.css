@@ -1,0 +1,46 @@
+/*
+Authors: Muhammed Hasa (w1689191): card and button hover effects
+*/
+
+.glowing-card{
+    transition: all 0.3 ease;
+    border-radius: 12px;
+}
+
+.glowing-card:hover{
+    transform: translateY(-5px);
+    border: 2px solid transparent;
+    background: linear-gradient(white,white) padding-box,
+                linear-gradient(135deg,#1e90ff,#6a5acd) border-box;
+    animation: gradientMove 3s ease infinite;
+}
+
+/* Button animated gradient */
+.btn-gradient {
+  background: linear-gradient(270deg, #1e90ff, #6a5acd, #1e90ff);
+  background-size: 400% 400%;
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.btn-gradient:hover {
+  animation: gradientMove 3s ease infinite;
+  color: white;
+}
+
+
+/* Animation keyframes */
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
