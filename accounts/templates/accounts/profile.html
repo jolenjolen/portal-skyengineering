@@ -88,24 +88,19 @@ Description: User profile page - view and update profile details, change passwor
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold">Email Address</label>
-                  <input type="email" name="email" class="form-control" value="{{ user.email }}" required />
+                  <input type="email" class="form-control" value="{{ user.email }}" disabled />
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold">Team</label>
-                  <select name="team" class="form-select">
-                    <option value="">— No team —</option>
-                    {% for team in teams %}
-                      <option value="{{ team.pk }}" {% if team == user.team %}selected{% endif %}>{{ team.name }}</option>
-                    {% endfor %}
-                  </select>
+                  <input type="text" class="form-control" value="{{ user.team.name|default:'—' }}" disabled />
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold">Last Login</label>
-                  <input type="text" name="last_login" class="form-control" value="{{ user.last_login|date:'d M Y H:i'|default:'—' }}" />
+                  <input type="text" class="form-control" value="{{ user.last_login|date:'d M Y H:i'|default:'—' }}" disabled />
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold">Department</label>
-                  <input type="text" name="department" class="form-control" value="{{ user.team.department.name|default:'—' }}" />
+                  <input type="text" class="form-control" value="{{ user.team.department.name|default:'—' }}" disabled />
                 </div>
               </div>
               <div class="mt-4">
