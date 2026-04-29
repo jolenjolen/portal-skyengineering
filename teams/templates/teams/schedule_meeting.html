@@ -1,0 +1,83 @@
+{% extends 'teams/base.html' %}
+{% comment %}
+Author: <YOUR NAME / STUDENT ID HERE>
+Description: Schedule-a-meeting form, opened from either the Teams list
+  page (📅 quick-action button) or the team detail page ("Schedule
+  Meeting" button). Submits to team_schedule_meeting_view, which
+  creates a row in schedule.Meeting attached to this team. The meeting
+  then automatically shows up on the Schedule pages built by another
+  team member, since they read from the same Meeting model.
+{% endcomment %}
+
+{% block title %}Schedule meeting — {{ team.name }} - SKY Engineering{% endblock %}
+
+{% block content %}
+  <a href="{% url 'team_detail' team.id %}"
+     class="text-decoration-none small text-muted">← Back to {{ team.name }}</a>
+
+  <h1 class="mb-1 mt-1">Schedule a meeting</h1>
+  <p class="text-muted">
+    Request a meeting with <strong>{{ team.name }}</strong>
+    {% if team.team_leader %}
+      (managed by {{ team.team_leader.fname }} {{ team.team_leader.sname }})
+    {% endif %}.
+    Once submitted, the meeting will appear on the Schedule pages.
+  </p>
+
+  <div class="card shadow-sm border-0 mt-3" style="max-width: 720px;">
+    <div class="card-body">
+      <form method="post" action="{% url 'team_schedule_meeting' team.id %}">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold" for="meeting-title">
+            Title
+          </label>
+          <input id="meeting-title" type="text" name="title"
+                 class="form-control"
+                 placeholder="e.g. Onboarding sync with {{ team.name }}"
+                 required />
+        </div>
+
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <label class="form-label fw-semibold" for="meeting-date">Date</label>
+            <input id="meeting-date" type="date" name="date"
+                   class="form-control" required />
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label fw-semibold" for="meeting-time">Time</label>
+            <input id="meeting-time" type="time" name="time"
+                   class="form-control" required />
+          </div>
+        </div>
+
+        <div class="mb-3 mt-3">
+          <label class="form-label fw-semibold" for="meeting-link">
+            Meeting link <span class="text-muted fw-normal">(optional)</span>
+          </label>
+          <input id="meeting-link" type="url" name="meeting_link"
+                 class="form-control"
+                 placeholder="https://teams.microsoft.com/..." />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold" for="meeting-message">
+            Notes / agenda <span class="text-muted fw-normal">(optional)</span>
+          </label>
+          <textarea id="meeting-message" name="message" rows="3"
+                    class="form-control"
+                    placeholder="Add any context the team should know about…"></textarea>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-gradient">
+            Schedule meeting
+          </button>
+          <a href="{% url 'team_detail' team.id %}"
+             class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -57,7 +57,7 @@ Decription: Main start page to welcome users
               </a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">Teams</a>
+              <a href="{% url 'team_list' %}" class="nav-link">Teams</a>
             </li>
             <li class="nav-item">
               <a href="#" class="nav-link">Departments</a>
@@ -110,7 +110,7 @@ Decription: Main start page to welcome users
                     available
                   </p>
                   <a
-                    href="{% url 'reports_dashboard' %}"
+                    href="{% url 'team_list' %}"
                     class="btn btn-gradient"
                   >
                     Open Teams</a
