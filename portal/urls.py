@@ -29,6 +29,5 @@ urlpatterns = [
     path('schedule/', include('schedule.urls')),
     path('messaging/', include('messaging.urls')),
     path('organisation/', include('organisation.urls')),
-    path('departments/', include('departments.urls')),
     path('teams/', include('teams.urls')),
 ]
