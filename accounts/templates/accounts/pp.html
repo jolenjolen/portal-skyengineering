@@ -9,8 +9,30 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="{% static 'accounts/css/styles.css' %}">
+    <style>
+        .doc-wrapper { display: flex; gap: 0; }
+        .doc-sidebar { width: 260px; min-width: 260px; border-right: 1px solid #dee2e6; padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; background: #fff; }
+        .doc-sidebar .sidebar-title { font-size: 11px; font-weight: 600; color: #6c757d; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; margin-top: 1.25rem; padding-left: 0.5rem; display: block; }
+        .doc-sidebar .sidebar-title:first-child { margin-top: 0; }
+        .doc-sidebar a { display: block; font-size: 14px; color: #495057; text-decoration: none; padding: 5px 10px; border-radius: 6px; line-height: 1.5; }
+        .doc-sidebar a:hover { background: #f8f9fa; color: #212529; }
+        .doc-sidebar a.active { background: #f8f9fa; color: #dc3545; font-weight: 600; }
+        .doc-content { flex: 1; padding: 2rem 2.5rem; text-align: left; }
+        .doc-section { margin-bottom: 2.5rem; scroll-margin-top: 1rem; }
+        .doc-section h2 { font-size: 17px; font-weight: 600; color: #212529; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid #dee2e6; }
+        .doc-section p { font-size: 14px; color: #495057; line-height: 1.8; margin-bottom: 0.75rem; }
+        .doc-section ul { font-size: 14px; color: #495057; line-height: 1.9; padding-left: 1.3rem; margin-bottom: 0.75rem; }
+        .doc-section ul li { margin-bottom: 0.25rem; }
+        .doc-tip { background: #d1e7dd; border-left: 3px solid #198754; border-radius: 0 6px 6px 0; padding: 0.6rem 1rem; margin-top: 0.85rem; font-size: 13px; color: #0a3622; }
+        .doc-warn { background: #fff3cd; border-left: 3px solid #ffc107; border-radius: 0 6px 6px 0; padding: 0.6rem 1rem; margin-top: 0.85rem; font-size: 13px; color: #664d03; }
+        .last-updated { font-size: 12px; color: #adb5bd; margin-top: 0.25rem; }
+        @media (max-width: 768px) {
+            .doc-sidebar { display: none; }
+            .doc-content { padding: 1.25rem; }
+        }
+    </style>
 </head>
-<body >
+<body>
     <nav class="navbar navbar-expand-sm navbar-light sticky-top">
         <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}">
@@ -26,45 +48,169 @@
                 <ul class="navbar-nav ms-auto text-center">
                     <hr>
                     <li class="nav-item mx-2">
-                    <a class="nav-link roboto-nav-link" href="{% url 'help' %}">Help</a>
+                        <a class="nav-link roboto-nav-link" href="{% url 'help' %}">Help</a>
                     </li>
                     <hr>
                     <li class="nav-item mx-2">
-                    <a class="nav-link roboto-nav-link" href="{% url 'contact' %}">Contact&nbsp;Support</a>
+                        <a class="nav-link roboto-nav-link" href="{% url 'contact' %}">Contact&nbsp;Support</a>
                     </li>
                     <hr>
                     <li class="nav-item mx-2">
-                    <a class="nav-link roboto-nav-link" href="{% url 'login' %}">Sign&nbsp;In</a>
-                    </li>   
-                    <br> 
+                        <a class="nav-link roboto-nav-link" href="{% url 'login' %}">Sign&nbsp;In</a>
+                    </li>
+                    <br>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="main m-2 p-2 rounded-4 border d-flex justify-content-center align-items-center">
-        <form action="" method="post" class="shadow border rounded-4 m-2 p-2 text-center" style="width: 450px;">
-            {% csrf_token %}
-            
-            <img src="{% static 'media/sky-engineering.png' %}" alt="" style="max-width: 250px; filter: grayscale(100%);" class="m-2">
-            
-            <div class="m-3">
-                <input type="text" name="username" maxlength="150" autofocus required id="id_username" class="form-control rounded-pill p-3" placeholder="Username">
-            </div>
-            <div class="m-3">
-                <input type="password" name="password" required id="id_password" class="form-control rounded-pill p-3" placeholder="Password">
-            </div>
-            <div class="container text-start p-3">
-                <p class="m-1 w-100 "><a href="{% url 'password_reset' %}" class="text-decoration-none roboto-nav-link form-link">Forgot Password?</a></p>
-                <button type="submit" class="btn btn-outline-dark w-100 my-3 roboto-nav-link rounded-pill p-3 shadow-sm">Login</button>
-                <p class="m-1 w-100 ">Don't Have an Account? <a href="{% url 'signup' %}" class="text-decoration-none roboto-nav-link form-link">Register</a></p>
-            </div>
-            {% if error %}
-                <div class="alert alert-danger rounded-pill mx-3" role="alert">
-                    {{ error }}
+    <div class="main2 m-2 p-2 rounded-4 border">
+        <main class="shadow border bg-white w-100 rounded-4 p-0 overflow-hidden">
+
+            <div class="doc-wrapper">
+
+                <!-- Sidebar -->
+                <nav class="doc-sidebar">
+                    <span class="sidebar-title">Privacy Policy</span>
+                    <a href="#overview">Overview</a>
+                    <a href="#data-collected">Data We Collect</a>
+                    <a href="#data-use">How We Use Your Data</a>
+                    <a href="#data-storage">Data Storage &amp; Security</a>
+                    <a href="#data-access">Who Can Access Your Data</a>
+                    <a href="#data-retention">Data Retention</a>
+                    <a href="#your-rights">Your Rights</a>
+                    <a href="#cookies">Cookies &amp; Sessions</a>
+                    <a href="#third-party">Third-Party Services</a>
+                    <a href="#changes">Changes to This Policy</a>
+                    <a href="#contact">Contact Us</a>
+
+                    <span class="sidebar-title">Related</span>
+                    <a href="{% url 'tos' %}">Terms of Service</a>
+                    <a href="{% url 'help' %}">Help Centre</a>
+                    <a href="{% url 'contact' %}">Contact Support</a>
+                </nav>
+
+                <!-- Content -->
+                <div class="doc-content">
+
+                    <div class="mb-4">
+                        <h1 class="fs-4 fw-semibold mb-1">Privacy Policy</h1>
+                        <p class="last-updated">Last updated: January 2025</p>
+                        <p class="text-muted mb-0" style="font-size:14px;">This policy explains how SKY Engineering collects, uses, and protects information within the Engineering Portal.</p>
+                    </div>
+
+                    <div class="doc-section" id="overview">
+                        <h2>Overview</h2>
+                        <p>The SKY Engineering Portal is an internal tool used exclusively by SKY Engineering employees. This Privacy Policy describes how employee data is collected and managed within the portal. By using the portal, you acknowledge that your data is processed as described in this document.</p>
+                        <p>This portal is not accessible to the general public. All users are authorised employees whose accounts are created and managed by system administrators.</p>
+                    </div>
+
+                    <div class="doc-section" id="data-collected">
+                        <h2>Data We Collect</h2>
+                        <p>The portal collects and stores the following categories of personal and operational data:</p>
+                        <ul>
+                            <li><strong>Account information</strong> — full name, username, email address, role, and team assignment</li>
+                            <li><strong>Authentication data</strong> — hashed passwords and session tokens (plaintext passwords are never stored)</li>
+                            <li><strong>Activity data</strong> — login timestamps and last login date</li>
+                            <li><strong>Messages</strong> — internal messages sent between users, including subject, body, sender, recipient, and timestamp</li>
+                            <li><strong>Meeting schedules</strong> — meeting titles, dates, times, and participants</li>
+                            <li><strong>Audit logs</strong> — records of administrative actions performed within the system</li>
+                        </ul>
+                        <div class="doc-tip">Passwords are hashed using a secure algorithm before being stored. The original password is never accessible after it is set.</div>
+                    </div>
+
+                    <div class="doc-section" id="data-use">
+                        <h2>How We Use Your Data</h2>
+                        <p>Data collected within the portal is used solely for the following purposes:</p>
+                        <ul>
+                            <li>Authenticating users and managing access to the portal</li>
+                            <li>Displaying organisational information such as team membership, department, and project assignments</li>
+                            <li>Facilitating internal communication via the messaging system</li>
+                            <li>Enabling meeting scheduling and coordination</li>
+                            <li>Generating internal reports and organisational insights</li>
+                            <li>Maintaining audit trails for administrative accountability</li>
+                        </ul>
+                        <p>Your data is not used for marketing, advertising, or any purpose outside of the portal's operational functions.</p>
+                    </div>
+
+                    <div class="doc-section" id="data-storage">
+                        <h2>Data Storage &amp; Security</h2>
+                        <p>All data is stored in a secured internal database. The following security measures are in place:</p>
+                        <ul>
+                            <li>Passwords are hashed using Django's built-in password hashing framework before storage</li>
+                            <li>Access to the database is restricted to authorised system administrators</li>
+                            <li>Session tokens are used to maintain authenticated sessions and are invalidated upon logout</li>
+                            <li>The portal requires authentication to access any restricted page or feature</li>
+                        </ul>
+                        <div class="doc-warn">If you suspect unauthorised access to your account, contact your administrator immediately via the Contact Support page.</div>
+                    </div>
+
+                    <div class="doc-section" id="data-access">
+                        <h2>Who Can Access Your Data</h2>
+                        <p>Access to your data within the portal is governed by your assigned role:</p>
+                        <ul>
+                            <li><strong>Administrators</strong> — can view and manage all user records, including names, usernames, email addresses, roles, and team assignments. Administrators cannot view plaintext passwords.</li>
+                            <li><strong>Standard users</strong> — can view their own profile information and data relevant to their team and department</li>
+                            <li><strong>Team Leaders and Department Heads</strong> — may have elevated visibility into team and department data as determined by their role</li>
+                        </ul>
+                        <p>Internal messages are visible to the sender and recipient only. Administrators may access message data for audit or support purposes.</p>
+                    </div>
+
+                    <div class="doc-section" id="data-retention">
+                        <h2>Data Retention</h2>
+                        <p>Data is retained for as long as it is necessary for operational purposes or as required by SKY Engineering's internal data governance policies. Specifically:</p>
+                        <ul>
+                            <li>User accounts that are deactivated remain in the database but cannot be used to log in</li>
+                            <li>Messages and audit logs are retained for operational and accountability purposes</li>
+                            <li>Deletion of user accounts and associated data can be performed by an administrator upon request</li>
+                        </ul>
+                    </div>
+
+                    <div class="doc-section" id="your-rights">
+                        <h2>Your Rights</h2>
+                        <p>As an employee using this internal portal, you have the following rights regarding your personal data:</p>
+                        <ul>
+                            <li><strong>Access</strong> — you may request a copy of the data held about you by contacting your administrator</li>
+                            <li><strong>Correction</strong> — if your data is incorrect, contact your administrator to have it updated</li>
+                            <li><strong>Deletion</strong> — you may request deletion of your account and associated data upon leaving the organisation</li>
+                            <li><strong>Password update</strong> — you can change your own password via the profile page once logged in</li>
+                        </ul>
+                        <p>To exercise any of these rights, use the <a href="{% url 'contact' %}" class="text-decoration-none form-link">Contact Support</a> page or speak directly with your system administrator.</p>
+                    </div>
+
+                    <div class="doc-section" id="cookies">
+                        <h2>Cookies &amp; Sessions</h2>
+                        <p>The portal uses session cookies to maintain your authenticated state while you are logged in. These cookies:</p>
+                        <ul>
+                            <li>Are created when you log in and destroyed when you log out</li>
+                            <li>Do not track browsing activity outside of the portal</li>
+                            <li>Are not used for advertising or analytics purposes</li>
+                            <li>Are required for the portal to function — disabling cookies will prevent login</li>
+                        </ul>
+                        <div class="doc-tip">Always log out when using a shared or public device to ensure your session is properly ended.</div>
+                    </div>
+
+                    <div class="doc-section" id="third-party">
+                        <h2>Third-Party Services</h2>
+                        <p>The portal may include links to third-party tools such as Jira boards and code repositories. These are external services with their own privacy policies. SKY Engineering is not responsible for the data practices of these third-party platforms.</p>
+                        <p>The portal does not share your personal data with any third-party services.</p>
+                    </div>
+
+                    <div class="doc-section" id="changes">
+                        <h2>Changes to This Policy</h2>
+                        <p>This Privacy Policy may be updated periodically to reflect changes in the portal's functionality or internal data governance requirements. Users will be notified of significant changes by their system administrator.</p>
+                        <p>Continued use of the portal following any changes constitutes acceptance of the updated policy.</p>
+                    </div>
+
+                    <div class="doc-section" id="contact">
+                        <h2>Contact Us</h2>
+                        <p>If you have any questions or concerns about this Privacy Policy or how your data is handled, please contact your system administrator via the <a href="{% url 'contact' %}" class="text-decoration-none form-link">Contact Support</a> page.</p>
+                    </div>
+
                 </div>
-            {% endif %}
-        </form>
+            </div>
+
+        </main>
     </div>
 
     <footer class="bg-white text-muted mt-2 border-top">
@@ -79,23 +225,15 @@
                     <a href="{% url 'tos' %}" class="text-decoration-none me-3 roboto-nav-link">Terms&nbsp;of&nbsp;Service</a>
                 </div>
             </div>
+        </div>
     </footer>
-
 
     <script>
         const navbar = document.getElementById('collapsibleNavbar');
         const menuIcon = document.getElementById('iconMenu');
         const closeIcon = document.getElementById('iconClose');
-
-        navbar.addEventListener('show.bs.collapse', () => {
-            menuIcon.classList.remove('active');
-            closeIcon.classList.add('active');
-        });
-
-        navbar.addEventListener('hide.bs.collapse', () => {
-            closeIcon.classList.remove('active');
-            menuIcon.classList.add('active');
-        });
+        navbar.addEventListener('show.bs.collapse', () => { menuIcon.classList.remove('active'); closeIcon.classList.add('active'); });
+        navbar.addEventListener('hide.bs.collapse', () => { closeIcon.classList.remove('active'); menuIcon.classList.add('active'); });
     </script>
 </body>
 </html>

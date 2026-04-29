@@ -9,8 +9,30 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="{% static 'accounts/css/styles.css' %}">
+    <style>
+        .doc-wrapper { display: flex; gap: 0; }
+        .doc-sidebar { width: 260px; min-width: 260px; border-right: 1px solid #dee2e6; padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; background: #fff; }
+        .doc-sidebar .sidebar-title { font-size: 11px; font-weight: 600; color: #6c757d; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; margin-top: 1.25rem; padding-left: 0.5rem; display: block; }
+        .doc-sidebar .sidebar-title:first-child { margin-top: 0; }
+        .doc-sidebar a { display: block; font-size: 14px; color: #495057; text-decoration: none; padding: 5px 10px; border-radius: 6px; line-height: 1.5; }
+        .doc-sidebar a:hover { background: #f8f9fa; color: #212529; }
+        .doc-sidebar a.active { background: #f8f9fa; color: #dc3545; font-weight: 600; }
+        .doc-content { flex: 1; padding: 2rem 2.5rem; text-align: left; }
+        .doc-section { margin-bottom: 2.5rem; scroll-margin-top: 1rem; }
+        .doc-section h2 { font-size: 17px; font-weight: 600; color: #212529; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid #dee2e6; }
+        .doc-section p { font-size: 14px; color: #495057; line-height: 1.8; margin-bottom: 0.75rem; }
+        .doc-section ul { font-size: 14px; color: #495057; line-height: 1.9; padding-left: 1.3rem; margin-bottom: 0.75rem; }
+        .doc-section ul li { margin-bottom: 0.25rem; }
+        .doc-tip { background: #d1e7dd; border-left: 3px solid #198754; border-radius: 0 6px 6px 0; padding: 0.6rem 1rem; margin-top: 0.85rem; font-size: 13px; color: #0a3622; }
+        .doc-warn { background: #fff3cd; border-left: 3px solid #ffc107; border-radius: 0 6px 6px 0; padding: 0.6rem 1rem; margin-top: 0.85rem; font-size: 13px; color: #664d03; }
+        .last-updated { font-size: 12px; color: #adb5bd; margin-top: 0.25rem; }
+        @media (max-width: 768px) {
+            .doc-sidebar { display: none; }
+            .doc-content { padding: 1.25rem; }
+        }
+    </style>
 </head>
-<body >
+<body>
     <nav class="navbar navbar-expand-sm navbar-light sticky-top">
         <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}">
@@ -26,45 +48,186 @@
                 <ul class="navbar-nav ms-auto text-center">
                     <hr>
                     <li class="nav-item mx-2">
-                    <a class="nav-link roboto-nav-link" href="{% url 'help' %}">Help</a>
+                        <a class="nav-link roboto-nav-link" href="{% url 'help' %}">Help</a>
                     </li>
                     <hr>
                     <li class="nav-item mx-2">
-                    <a class="nav-link roboto-nav-link" href="{% url 'contact' %}">Contact&nbsp;Support</a>
+                        <a class="nav-link roboto-nav-link" href="{% url 'contact' %}">Contact&nbsp;Support</a>
                     </li>
                     <hr>
                     <li class="nav-item mx-2">
-                    <a class="nav-link roboto-nav-link" href="{% url 'login' %}">Sign&nbsp;In</a>
-                    </li>   
-                    <br> 
+                        <a class="nav-link roboto-nav-link" href="{% url 'login' %}">Sign&nbsp;In</a>
+                    </li>
+                    <br>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="main m-2 p-2 rounded-4 border d-flex justify-content-center align-items-center">
-        <form action="" method="post" class="shadow border rounded-4 m-2 p-2 text-center" style="width: 450px;">
-            {% csrf_token %}
-            
-            <img src="{% static 'media/sky-engineering.png' %}" alt="" style="max-width: 250px; filter: grayscale(100%);" class="m-2">
-            
-            <div class="m-3">
-                <input type="text" name="username" maxlength="150" autofocus required id="id_username" class="form-control rounded-pill p-3" placeholder="Username">
-            </div>
-            <div class="m-3">
-                <input type="password" name="password" required id="id_password" class="form-control rounded-pill p-3" placeholder="Password">
-            </div>
-            <div class="container text-start p-3">
-                <p class="m-1 w-100 "><a href="{% url 'password_reset' %}" class="text-decoration-none roboto-nav-link form-link">Forgot Password?</a></p>
-                <button type="submit" class="btn btn-outline-dark w-100 my-3 roboto-nav-link rounded-pill p-3 shadow-sm">Login</button>
-                <p class="m-1 w-100 ">Don't Have an Account? <a href="{% url 'signup' %}" class="text-decoration-none roboto-nav-link form-link">Register</a></p>
-            </div>
-            {% if error %}
-                <div class="alert alert-danger rounded-pill mx-3" role="alert">
-                    {{ error }}
+    <div class="main2 m-2 p-2 rounded-4 border">
+        <main class="shadow border bg-white w-100 rounded-4 p-0 overflow-hidden">
+
+            <div class="doc-wrapper">
+
+                <!-- Sidebar -->
+                <nav class="doc-sidebar">
+                    <span class="sidebar-title">Terms of Service</span>
+                    <a href="#overview">Overview</a>
+                    <a href="#eligibility">Eligibility &amp; Access</a>
+                    <a href="#acceptable-use">Acceptable Use</a>
+                    <a href="#prohibited">Prohibited Conduct</a>
+                    <a href="#account-responsibilities">Account Responsibilities</a>
+                    <a href="#content">Content &amp; Messaging</a>
+                    <a href="#availability">System Availability</a>
+                    <a href="#intellectual-property">Intellectual Property</a>
+                    <a href="#termination">Termination of Access</a>
+                    <a href="#liability">Limitation of Liability</a>
+                    <a href="#changes">Changes to These Terms</a>
+                    <a href="#contact">Contact Us</a>
+
+                    <span class="sidebar-title">Related</span>
+                    <a href="{% url 'pp' %}">Privacy Policy</a>
+                    <a href="{% url 'help' %}">Help Centre</a>
+                    <a href="{% url 'contact' %}">Contact Support</a>
+                </nav>
+
+                <!-- Content -->
+                <div class="doc-content">
+
+                    <div class="mb-4">
+                        <h1 class="fs-4 fw-semibold mb-1">Terms of Service</h1>
+                        <p class="last-updated">Last updated: January 2025</p>
+                        <p class="text-muted mb-0" style="font-size:14px;">These terms govern your use of the SKY Engineering Portal. By accessing the portal, you agree to these terms.</p>
+                    </div>
+
+                    <div class="doc-section" id="overview">
+                        <h2>Overview</h2>
+                        <p>The SKY Engineering Portal ("the Portal") is an internal system owned and operated by SKY Engineering. It is made available exclusively to authorised employees for the purpose of managing teams, departments, projects, communications, and related operational activities.</p>
+                        <p>By logging in and using the Portal, you confirm that you have read, understood, and agree to be bound by these Terms of Service. If you do not agree, you must not use the Portal and should contact your administrator.</p>
+                    </div>
+
+                    <div class="doc-section" id="eligibility">
+                        <h2>Eligibility &amp; Access</h2>
+                        <p>Access to the Portal is restricted to current SKY Engineering employees whose accounts have been created and activated by a system administrator. You must not:</p>
+                        <ul>
+                            <li>Share your login credentials with any other person</li>
+                            <li>Attempt to access the Portal using another person's credentials</li>
+                            <li>Access the Portal after your employment with SKY Engineering has ended</li>
+                            <li>Attempt to access pages or features beyond those permitted by your assigned role</li>
+                        </ul>
+                        <div class="doc-warn">Accounts are personal and non-transferable. Sharing credentials is a breach of these terms and may result in immediate account suspension.</div>
+                    </div>
+
+                    <div class="doc-section" id="acceptable-use">
+                        <h2>Acceptable Use</h2>
+                        <p>The Portal is provided for legitimate business purposes only. You agree to use it in a manner that is:</p>
+                        <ul>
+                            <li>Consistent with your role and responsibilities at SKY Engineering</li>
+                            <li>Respectful of other users and the information contained within the system</li>
+                            <li>Compliant with SKY Engineering's internal policies and applicable laws</li>
+                            <li>Limited to activities necessary for your work duties</li>
+                        </ul>
+                    </div>
+
+                    <div class="doc-section" id="prohibited">
+                        <h2>Prohibited Conduct</h2>
+                        <p>The following activities are strictly prohibited when using the Portal:</p>
+                        <ul>
+                            <li>Attempting to bypass authentication or access controls</li>
+                            <li>Uploading, transmitting, or distributing malicious code or harmful content</li>
+                            <li>Accessing, modifying, or deleting data that you are not authorised to manage</li>
+                            <li>Using the messaging system to send inappropriate, offensive, or harassing content</li>
+                            <li>Attempting to reverse-engineer, scrape, or extract data from the Portal in an unauthorised manner</li>
+                            <li>Interfering with the Portal's availability or performance</li>
+                            <li>Using the Portal for any purpose unrelated to SKY Engineering business</li>
+                        </ul>
+                        <div class="doc-warn">Violations of these prohibitions may result in immediate suspension of access and may be escalated to HR or legal teams.</div>
+                    </div>
+
+                    <div class="doc-section" id="account-responsibilities">
+                        <h2>Account Responsibilities</h2>
+                        <p>You are responsible for maintaining the security of your account. This includes:</p>
+                        <ul>
+                            <li>Keeping your password confidential and not sharing it with others</li>
+                            <li>Logging out of the Portal when using a shared or public device</li>
+                            <li>Notifying your administrator immediately if you suspect unauthorised access to your account</li>
+                            <li>Updating your password promptly when requested by an administrator</li>
+                        </ul>
+                        <div class="doc-tip">If you forget your password or your account is locked, use the Contact Support page to request a reset from your administrator.</div>
+                    </div>
+
+                    <div class="doc-section" id="content">
+                        <h2>Content &amp; Messaging</h2>
+                        <p>The Portal includes an internal messaging system for professional communication between employees. When using the messaging system, you agree to:</p>
+                        <ul>
+                            <li>Communicate in a professional and respectful manner</li>
+                            <li>Use the system solely for work-related communications</li>
+                            <li>Not send unsolicited, offensive, or inappropriate messages</li>
+                            <li>Not share confidential information inappropriately through the messaging system</li>
+                        </ul>
+                        <p>SKY Engineering reserves the right to review message content for audit, compliance, or support purposes as described in the <a href="{% url 'pp' %}" class="text-decoration-none form-link">Privacy Policy</a>.</p>
+                    </div>
+
+                    <div class="doc-section" id="availability">
+                        <h2>System Availability</h2>
+                        <p>SKY Engineering will make reasonable efforts to ensure the Portal is available during working hours. However, the Portal may be temporarily unavailable due to:</p>
+                        <ul>
+                            <li>Scheduled maintenance or system updates</li>
+                            <li>Unplanned technical issues or outages</li>
+                            <li>Circumstances outside SKY Engineering's control</li>
+                        </ul>
+                        <p>SKY Engineering does not guarantee uninterrupted access and is not liable for any loss resulting from temporary unavailability of the Portal.</p>
+                    </div>
+
+                    <div class="doc-section" id="intellectual-property">
+                        <h2>Intellectual Property</h2>
+                        <p>All content, design, code, and data within the Portal is the intellectual property of SKY Engineering. You may not:</p>
+                        <ul>
+                            <li>Copy, reproduce, or distribute any part of the Portal without authorisation</li>
+                            <li>Use Portal content for purposes outside of your employment duties</li>
+                            <li>Remove or alter any branding, copyright notices, or proprietary markings</li>
+                        </ul>
+                    </div>
+
+                    <div class="doc-section" id="termination">
+                        <h2>Termination of Access</h2>
+                        <p>SKY Engineering reserves the right to suspend or terminate your access to the Portal at any time, without notice, in the event of:</p>
+                        <ul>
+                            <li>Breach of these Terms of Service</li>
+                            <li>Termination of your employment with SKY Engineering</li>
+                            <li>A security concern requiring immediate account deactivation</li>
+                            <li>Extended period of inactivity at the discretion of an administrator</li>
+                        </ul>
+                        <p>Upon termination of employment, your account will be deactivated and you will no longer be able to log in. Any data associated with your account may be retained in accordance with the <a href="{% url 'pp' %}" class="text-decoration-none form-link">Privacy Policy</a>.</p>
+                    </div>
+
+                    <div class="doc-section" id="liability">
+                        <h2>Limitation of Liability</h2>
+                        <p>To the fullest extent permitted by applicable law, SKY Engineering is not liable for:</p>
+                        <ul>
+                            <li>Any loss of data resulting from system failures or user error</li>
+                            <li>Interruptions to Portal availability</li>
+                            <li>Actions taken by other users within the Portal</li>
+                            <li>Any indirect, incidental, or consequential losses arising from your use of the Portal</li>
+                        </ul>
+                        <p>You use the Portal at your own risk, subject to SKY Engineering's duty of care as an employer.</p>
+                    </div>
+
+                    <div class="doc-section" id="changes">
+                        <h2>Changes to These Terms</h2>
+                        <p>SKY Engineering may update these Terms of Service from time to time. Users will be notified of significant changes by their system administrator. Continued use of the Portal after changes are communicated constitutes acceptance of the updated terms.</p>
+                        <p>It is your responsibility to review these terms periodically to stay informed of any updates.</p>
+                    </div>
+
+                    <div class="doc-section" id="contact">
+                        <h2>Contact Us</h2>
+                        <p>If you have any questions about these Terms of Service or need to report a concern, please contact your system administrator via the <a href="{% url 'contact' %}" class="text-decoration-none form-link">Contact Support</a> page.</p>
+                    </div>
+
                 </div>
-            {% endif %}
-        </form>
+            </div>
+
+        </main>
     </div>
 
     <footer class="bg-white text-muted mt-2 border-top">
@@ -79,23 +242,15 @@
                     <a href="{% url 'tos' %}" class="text-decoration-none me-3 roboto-nav-link active-link">Terms&nbsp;of&nbsp;Service</a>
                 </div>
             </div>
+        </div>
     </footer>
-
 
     <script>
         const navbar = document.getElementById('collapsibleNavbar');
         const menuIcon = document.getElementById('iconMenu');
         const closeIcon = document.getElementById('iconClose');
-
-        navbar.addEventListener('show.bs.collapse', () => {
-            menuIcon.classList.remove('active');
-            closeIcon.classList.add('active');
-        });
-
-        navbar.addEventListener('hide.bs.collapse', () => {
-            closeIcon.classList.remove('active');
-            menuIcon.classList.add('active');
-        });
+        navbar.addEventListener('show.bs.collapse', () => { menuIcon.classList.remove('active'); closeIcon.classList.add('active'); });
+        navbar.addEventListener('hide.bs.collapse', () => { closeIcon.classList.remove('active'); menuIcon.classList.add('active'); });
     </script>
 </body>
 </html>
