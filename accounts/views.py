@@ -191,7 +191,7 @@ def profile_view(request):
             user.email = email
             user.role = role
             user.team = TblTeam.objects.filter(pk=team_id).first() if team_id else None
-            user.save(update_fields=['fname', 'sname', 'uname', 'email', 'role', 'team'])
+            user.save(update_fields=['fname', 'sname', 'uname', 'email', 'team'])
             # Update the department name if provided
             if user.team and user.team.department and department_name:
                 user.team.department.name = department_name
