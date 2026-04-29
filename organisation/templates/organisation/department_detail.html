@@ -115,8 +115,7 @@
               <div class="row align-items-center">
                 <div class="col-md-8">
                   <h4 class="fw-bold mb-1">
-                    <i class="fas fa-building me-2 text-primary"></i>{{
-                    dept.name }}
+                    <i class="fas fa-building me-2 text-primary"></i>{{dept.name }}
                   </h4>
                   <span class="badge bg-primary">{{ team_count }} Teams</span>
                 </div>
@@ -128,8 +127,7 @@
                     <div>
                       <div class="text-muted small">Department Head</div>
                       <div class="fw-semibold">
-                        {{ dept.department_head.fname }} {{
-                        dept.department_head.sname }}
+                        {{ dept.department_head.fname }} {{dept.department_head.sname }}
                       </div>
                       <div class="text-muted small">
                         {{ dept.department_head.email }}
@@ -144,8 +142,7 @@
                         flex-shrink: 0;
                       "
                     >
-                      {{ dept.department_head.fname|first }}{{
-                      dept.department_head.sname|first }}
+                      {{ dept.department_head.fname|first }}{{dept.department_head.sname|first }}
                     </div>
                   </div>
                   {% else %}
@@ -157,8 +154,7 @@
           </div>
 
           <h5 class="fw-bold mb-3">
-            <i class="fas fa-users me-2 text-primary"></i>Teams ({{ team_count
-            }})
+            <i class="fas fa-users me-2 text-primary"></i>Teams ({{ team_count}})
           </h5>
 
           {% for item in teams_with_members %}
@@ -171,8 +167,7 @@
                 {% if item.team.team_leader %}
                 <span class="text-muted ms-2 small">
                   <i class="fas fa-user-tie me-1"></i>Lead: {{
-                  item.team.team_leader.fname }} {{ item.team.team_leader.sname
-                  }}
+                  item.team.team_leader.fname }} {{ item.team.team_leader.sname}}
                 </span>
                 {% endif %}
               </div>
@@ -241,13 +236,11 @@
                   <div class="d-flex flex-wrap gap-2">
                     {% for dep in item.upstream_deps %}
                     <span class="badge" style="background: #17a2b8">
-                      <i class="fas fa-arrow-up me-1"></i>Upstream: {{
-                      dep.dependency_team_name }}
+                      <i class="fas fa-arrow-up me-1"></i>Upstream: {{dep.dependency_team_name }}
                     </span>
                     {% endfor %} {% for dep in item.downstream_deps %}
                     <span class="badge" style="background: #6f42c1">
-                      <i class="fas fa-arrow-down me-1"></i>Downstream: {{
-                      dep.dependency_team_name }}
+                      <i class="fas fa-arrow-down me-1"></i>Downstream: {{dep.dependency_team_name }}
                     </span>
                     {% endfor %}
                   </div>
