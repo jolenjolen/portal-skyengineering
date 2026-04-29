@@ -1,0 +1,96 @@
+{% extends 'organisation/base.html' %}
+{% block title %}Team Dependencies{% endblock %}
+{% block page_title %}Team Dependencies{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label small text-muted">Search Team</label>
+                <input type="text" name="q" value="{{ query }}" placeholder="Search by team name..." class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small text-muted">Dependency Type</label>
+                <select name="type" class="form-select">
+                    <option value="all" {% if dep_type == 'all' %}selected{% endif %}>All Dependencies</option>
+                    <option value="upstream" {% if dep_type == 'upstream' %}selected{% endif %}>Upstream Only</option>
+                    <option value="downstream" {% if dep_type == 'downstream' %}selected{% endif %}>Downstream Only</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-sky flex-grow-1"><i class="fas fa-filter me-1"></i>Filter</button>
+                <a href="{% url 'organisation:dependencies' %}" class="btn btn-outline-secondary">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="alert alert-info d-flex gap-3 mb-4">
+    <i class="fas fa-info-circle fa-lg mt-1"></i>
+    <div>
+        <strong>Understanding Dependencies:</strong>
+        <span class="ms-1"><span class="badge" style="background:#17a2b8;">↑ Upstream</span> – Teams this team depends on.</span>
+        <span class="ms-2"><span class="badge" style="background:#6f42c1;">↓ Downstream</span> – Teams that depend on this team.</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header py-3">
+        <i class="fas fa-code-branch me-2 text-primary"></i>Team Dependencies
+        <span class="badge bg-secondary ms-2">{{ teams_deps|length }} teams</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Team</th>
+                        <th>Department</th>
+                        <th><span class="badge" style="background:#17a2b8;">↑ Upstream</span></th>
+                        <th><span class="badge" style="background:#6f42c1;">↓ Downstream</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in teams_deps %}
+                    <tr>
+                        <td class="fw-semibold">{{ item.team.name }}</td>
+                        <td>
+                            {% if item.team.department %}
+                                <span class="dept-badge">{{ item.team.department.name }}</span>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% for dep in item.upstream %}
+                                <span class="badge me-1 mb-1" style="background:#17a2b8;">
+                                    <i class="fas fa-arrow-up me-1"></i>{{ dep.dependency_team_name|default:dep.type }}
+                                </span>
+                            {% empty %}
+                                <span class="text-muted small">None</span>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for dep in item.downstream %}
+                                <span class="badge me-1 mb-1" style="background:#6f42c1;">
+                                    <i class="fas fa-arrow-down me-1"></i>{{ dep.dependency_team_name|default:dep.type }}
+                                </span>
+                            {% empty %}
+                                <span class="text-muted small">None</span>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            <i class="fas fa-search me-2"></i>No teams found matching your filters.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

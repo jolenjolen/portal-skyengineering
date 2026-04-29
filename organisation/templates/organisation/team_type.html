@@ -1,0 +1,74 @@
+{% extends 'organisation/base.html' %}
+{% block title %}Team Types{% endblock %}
+{% block page_title %}Team Types & Specialisations{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="d-flex gap-2 align-items-end flex-wrap">
+            <div>
+                <label class="form-label small text-muted">Filter by Department</label>
+                <select name="dept" class="form-select" style="min-width:200px;">
+                    <option value="">All Departments</option>
+                    {% for dept in all_depts %}
+                    <option value="{{ dept.id }}" {% if selected_dept == dept.id|stringformat:"s" %}selected{% endif %}>
+                        {{ dept.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-sky"><i class="fas fa-filter me-1"></i>Filter</button>
+            {% if selected_dept %}
+            <a href="{% url 'organisation:team_types' %}" class="btn btn-outline-secondary">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+{% for item in grouped %}
+<div class="card mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-building me-2 text-primary"></i><strong>{{ item.dept.name }}</strong></span>
+        <span class="badge bg-primary">{{ item.count }} teams</span>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            {% for team in item.teams %}
+            <div class="col-md-6 col-lg-4">
+                <div class="border rounded p-3 h-100" style="background:#f8f9fa;">
+                    <div class="fw-semibold mb-2">
+                        <i class="fas fa-users me-1 text-primary"></i>{{ team.name }}
+                    </div>
+                    {% if team.description %}
+                    <div class="small text-muted mb-2">{{ team.description|truncatechars:100 }}</div>
+                    {% endif %}
+                    {% if team.skills_and_tech %}
+                    <div class="mb-2">
+                        <small class="text-muted">Specialisation:</small><br>
+                        <small>{{ team.skills_and_tech }}</small>
+                    </div>
+                    {% endif %}
+                    {% if team.team_leader %}
+                    <div class="small text-muted">
+                        <i class="fas fa-user-tie me-1"></i>{{ team.team_leader.fname }} {{ team.team_leader.sname }}
+                    </div>
+                    {% endif %}
+                    {% if team.agile_practices %}
+                    <div class="small mt-1">
+                        <span class="badge bg-light text-dark border">
+                            <i class="fas fa-sync me-1"></i>{{ team.agile_practices }}
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-muted">No teams in this department.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-info">No departments found.</div>
+{% endfor %}
+{% endblock %}

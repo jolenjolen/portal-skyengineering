@@ -28,4 +28,5 @@ urlpatterns = [
     path('admin-panel/',include('adminpanel.urls')),
     path('schedule/', include('schedule.urls')),
     path('messaging/', include('messaging.urls')),
+    path('organisation/', include('organisation.urls')),
 ]
