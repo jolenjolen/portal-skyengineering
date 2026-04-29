@@ -6,3 +6,4 @@ venv/
 .env/
 .idea/
 .vscode/
+.DBv2_backup_ignore/

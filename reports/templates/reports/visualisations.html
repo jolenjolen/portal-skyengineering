@@ -107,6 +107,14 @@ Description: Report visualisations page
         <a class="navbar-brand" href="{% url 'home' %}">
           <img src="{% static 'media/logo.png' %}" alt="SKY LOGO" height="36" />
         </a>
+        <button
+              class="navbar-toggler d-lg-none"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#sidebarMenu"
+                 >
+              <span class="navbar-toggler-icon"></span>
+             </button>
         <div class="d-flex align-items-center gap-2">
           <span class="fw-semibold text-primary small">Engineering Portal</span>
           <a href="{% url 'reports_dashboard' %}" class="btn btn-outline-secondary btn-sm">← Reports</a>
@@ -122,7 +130,7 @@ Description: Report visualisations page
       <div class="row">
 
         <!-- Sidebar -->
-        <aside class="col-md-2 col-12 bg-white border-end p-4">
+        <aside id="sidebarMenu" class="collapse d-lg-block col-lg-2 col-12 bg-white border-end p-4">
           <h5 class="mb-4">Menu</h5>
 
           <ul class="nav flex-column gap-2">

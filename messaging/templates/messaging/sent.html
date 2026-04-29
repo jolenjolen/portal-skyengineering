@@ -16,6 +16,14 @@
             <a class="navbar-brand" href="{% url 'home' %}">
                 <img src="{% static 'media/logo.png' %}" alt="SKY Logo" height="40" />
             </a>
+            <button
+              class="navbar-toggler d-lg-none"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#sidebarMenu"
+                 >
+              <span class="navbar-toggler-icon"></span>
+             </button>
             <div class="d-flex align-items-center gap-3">
                 <span class="fw-semibold text-primary">Engineering Portal</span>
                 <form action="{% url 'logout' %}" method="post" class="m-0">
@@ -28,7 +36,7 @@
 
     <div class="container-fluid">
         <div class="row">
-            <aside class="col-md-2 col-12 bg-white border-end p-4">
+            <aside id="sidebarMenu" class="collapse d-lg-block col-lg-2 col-12 bg-white border-end p-4">
                 <h5 class="mb-4">Menu</h5>
                 <ul class="nav flex-column gap-2">
                     <li class="nav-item"><a href="{% url 'home' %}" class="nav-link">Dashboard</a></li>
@@ -71,7 +79,7 @@
                             <tbody>
                                 {% for msg in messages %}
                                 <tr>
-                                    <td>{{ msg.recipient.username }}</td>
+                                    <td>{{ msg.recipient.uname }}</td>
                                     <td>{{ msg.subject }}</td>
                                     <td>{{ msg.created_at|date:"d M Y H:i" }}</td>
                                     <td><a href="{% url 'view_message' msg.id %}" class="btn btn-sm btn-outline-danger">View</a></td>
