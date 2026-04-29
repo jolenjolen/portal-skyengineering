@@ -132,6 +132,14 @@ Description: Admin panel dashboard with audit log
         <a class="navbar-brand" href="{% url 'home' %}">
           <img src="{% static 'media/logo.png' %}" alt="SKY Logo" height="40" />
         </a>
+        <button
+          class="navbar-toggler d-lg-none"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#sidebarMenu"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
         <div class="d-flex align-items-center gap-3">
           <span class="fw-semibold text-primary">Engineering Portal</span>
           <form action="{% url 'logout' %}" method="post" class="m-0">
@@ -146,7 +154,7 @@ Description: Admin panel dashboard with audit log
       <div class="row">
 
         <!-- Side Menu -->
-        <aside class="col-md-2 col-12 bg-white border-end p-4 min-vh-100">
+        <aside id="sidebarMenu" class="collapse d-lg-block col-lg-2 col-12 bg-white border-end p-4">
           <h5 class="mb-4">Menu</h5>
           <ul class="nav flex-column gap-2">
             <li class="nav-item">
@@ -184,7 +192,7 @@ Description: Admin panel dashboard with audit log
         </aside>
 
         <!-- Main content -->
-        <main class="col-md-10 col-12 py-4 px-4">
+        <main class="col-lg-10 col-12 py-4 px-4">
           <h1>Admin Dashboard</h1>
           <p class="text-muted">
             Manage users, teams and the system on this page. Only admins can see this page.<br />
