@@ -43,6 +43,9 @@ Description: User profile page - view and update profile details, change passwor
           <li class="nav-item"><a href="{% url 'schedule' %}" class="nav-link">Schedule</a></li>
           <li class="nav-item"><a href="{% url 'reports_dashboard' %}" class="nav-link">Reports</a></li>
           <li class="nav-item"><a href="{% url 'profile' %}" class="nav-link active fw-bold text-danger">Profile</a></li>
+          {% if is_admin_user %}
+          <li class="nav-item"><a href="{% url 'admin_dashboard' %}" class="nav-link">Admin</a></li>
+          {% endif %}
         </ul>
       </aside>
 

@@ -190,6 +190,7 @@ def profile_view(request):
         'user': user,
         'error': error,
         'success': success,
+        'is_admin_user': is_admin(request),
     })
 
 # page to change password
@@ -211,4 +212,5 @@ def change_password_view(request):
         'error': error,
         'success': success,
         'password_tab': True,
+        'is_admin_user': is_admin(request),
     })
