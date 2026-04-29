@@ -60,7 +60,7 @@ Decription: Main start page to welcome users
               <a href="{% url 'team_list' %}" class="nav-link">Teams</a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">Departments</a>
+              <a href="{% url 'organisation:department_list' %}" class="nav-link">Departments</a>
             </li>
             <li class="nav-item">
               <a href="{% url 'organisation:overview' %}" class="nav-link">Organization</a>
@@ -128,7 +128,7 @@ Decription: Main start page to welcome users
                     department and specialisations.
                   </p>
                   <a
-                    href="{% url 'reports_dashboard' %}"
+                    href="{% url 'organisation:department_list' %}"
                     class="btn btn-gradient"
                   >
                     Open Departments</a
