@@ -55,7 +55,7 @@ Description: base template. Helpful for keeping a blueprint on the navbar
               <a href="#" class="nav-link">Departments</a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">Organization</a>
+              <a href="{% url 'organisation:overview' %}" class="nav-link">Organization</a>
             </li>
             <li class="nav-item">
               <a href="{% url 'inbox' %}" class="nav-link">Messages</a>
