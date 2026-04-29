@@ -22,12 +22,19 @@ Decription: Main start page to welcome users
   </head>
   <body class="bg-light">
     <!--Top navigation bar-->
-    <nav class="navbar bg-white border-bottom">
+    <nav class="navbar navbar-light bg-white border-bottom">
       <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'home' %}">
           <img src="{% static 'media/logo.png' %}" alt="SKY Logo" height="40" />
         </a>
-
+        <button
+          class="navbar-toggler d-lg-none"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#sidebarMenu"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
         <div class="d-flex align-items-center gap-3">
           <span class="fw-semibold text-primary">Engineering Portal</span>
 
@@ -44,7 +51,10 @@ Decription: Main start page to welcome users
     <div class="container-fluid">
       <div class="row">
         <!--Side Menu-->
-        <aside class="col-md-2 col-12 bg-white border-end p-4">
+        <aside
+          id="sidebarMenu"
+          class="collapse d-lg-block col-lg-2 col-12 bg-white border-end p-4"
+        >
           <h5 class="mb-4">Menu</h5>
 
           <ul class="nav flex-column gap-2">
@@ -60,10 +70,16 @@ Decription: Main start page to welcome users
               <a href="{% url 'team_list' %}" class="nav-link">Teams</a>
             </li>
             <li class="nav-item">
-              <a href="{% url 'organisation:department_list' %}" class="nav-link">Departments</a>
+              <a
+                href="{% url 'organisation:department_list' %}"
+                class="nav-link"
+                >Departments</a
+              >
             </li>
             <li class="nav-item">
-              <a href="{% url 'organisation:overview' %}" class="nav-link">Organization</a>
+              <a href="{% url 'organisation:overview' %}" class="nav-link"
+                >Organization</a
+              >
             </li>
             <li class="nav-item">
               <a href="{% url 'inbox' %}" class="nav-link">Messages</a>
@@ -87,7 +103,7 @@ Decription: Main start page to welcome users
           </ul>
         </aside>
 
-        <main class="col-md-10 col-12 p-5">
+        <main class="col-lg-10 col-12 p-5">
           <h1 class="mb-3">Dashboard</h1>
           <p class="text-muted">
             Welcome to the SKY Engineering portal. Please use the menu to access
@@ -109,10 +125,7 @@ Decription: Main start page to welcome users
                     dependencies. Contact information for each team also
                     available
                   </p>
-                  <a
-                    href="{% url 'team_list' %}"
-                    class="btn btn-gradient"
-                  >
+                  <a href="{% url 'team_list' %}" class="btn btn-gradient">
                     Open Teams</a
                   >
                 </div>
@@ -162,13 +175,8 @@ Decription: Main start page to welcome users
               <div class="card glowing-card">
                 <div class="card-body">
                   <h5 class="card-title">Messages</h5>
-                  <p class="card-text">
-                    Message teams and see your inbox
-                  </p>
-                  <a
-                    href="{% url 'inbox' %}"
-                    class="btn btn-gradient"
-                  >
+                  <p class="card-text">Message teams and see your inbox</p>
+                  <a href="{% url 'inbox' %}" class="btn btn-gradient">
                     Open messages</a
                   >
                 </div>
@@ -185,10 +193,7 @@ Decription: Main start page to welcome users
                   <p class="card-text">
                     View your calendar/ schedule and see upcoming meetings
                   </p>
-                  <a
-                    href="{% url 'schedule' %}"
-                    class="btn btn-gradient"
-                  >
+                  <a href="{% url 'schedule' %}" class="btn btn-gradient">
                     Open Schedule</a
                   >
                 </div>
