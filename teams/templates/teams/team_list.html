@@ -1,0 +1,195 @@
+{% extends 'teams/base.html' %}
+{% comment %}
+Author: <YOUR NAME / STUDENT ID HERE>
+Description: Teams listing page. Mirrors the CWK1 storyboard layout:
+  - rounded "Search Anything..." bar with magenta search button
+  - magenta "Engineering Teams" header bar
+  - light-pink subheader row of column titles
+  - data rows: Team Name, Department, Manager, Skills, Dependencies, View
+
+  In addition to the storyboard's "learn more" link, each row also has
+  two quick-action icon buttons: ✉ "Email Team" (mailto: the team manager)
+  and 📅 "Schedule Meeting" (opens the schedule form for that team).
+
+  The search box is a real GET form: when the user types in it and presses
+  Enter / clicks the magnifying-glass, the request is sent back to the
+  same view with ?q=<query>, which then filters teams by name, department,
+  manager name or listed skills. (See team_list_view in views.py.)
+{% endcomment %}
+
+{% block title %}Teams - SKY Engineering{% endblock %}
+
+{% block content %}
+  <h1 class="mb-1">Teams</h1>
+  <p class="text-muted">
+    Browse every engineering team at Sky. Use the search bar to filter by
+    team name, department, manager or skill — results update when you
+    submit the form.
+  </p>
+
+  <!-- ============================================================== -->
+  <!-- Search bar (storyboard layout: rounded pill + magenta circle btn) -->
+  <!-- ============================================================== -->
+  <form method="get" action="{% url 'team_list' %}" class="teams-search mb-4" role="search">
+    <div class="teams-search__wrap">
+      <input
+        type="text"
+        name="q"
+        value="{{ query }}"
+        class="teams-search__input"
+        placeholder="Search Anything..."
+        aria-label="Search teams"
+        autocomplete="off"
+      />
+      <button type="submit" class="teams-search__btn" aria-label="Search">
+        {# magnifying-glass icon (inline SVG so we don't need an icon font) #}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+             width="20" height="20" fill="none" stroke="currentColor"
+             stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+    </div>
+    {% if query %}
+      <a href="{% url 'team_list' %}" class="btn btn-link teams-search__clear">
+        Clear search
+      </a>
+    {% endif %}
+  </form>
+
+  {% if query %}
+    <p class="text-muted small mb-3">
+      Showing <strong>{{ result_count }}</strong>
+      result{{ result_count|pluralize }} for "<em>{{ query }}</em>".
+    </p>
+  {% endif %}
+
+  <!-- ============================================================== -->
+  <!--                    Engineering Teams table                    -->
+  <!-- ============================================================== -->
+  <section class="teams-card card border-0 shadow-sm">
+    {# Magenta header bar — matches the storyboard #}
+    <div class="teams-card__header">Engineering Teams</div>
+
+    <div class="table-responsive">
+      <table class="table teams-table mb-0">
+        <thead>
+          <tr>
+            <th scope="col">Team Name</th>
+            <th scope="col">Department</th>
+            <th scope="col">Manager</th>
+            <th scope="col">Skills</th>
+            <th scope="col">Dependencies</th>
+            <th scope="col" class="text-end">View</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for team in teams %}
+            <tr>
+              {# ---- Team name ---- #}
+              <td class="fw-semibold">{{ team.name }}</td>
+
+              {# ---- Department ---- #}
+              <td>
+                {% if team.department %}
+                  {{ team.department.name }}
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+
+              {# ---- Manager (team_leader) ---- #}
+              <td>
+                {% if team.team_leader %}
+                  {{ team.team_leader.fname }} {{ team.team_leader.sname }}
+                {% else %}
+                  <span class="text-muted">No manager</span>
+                {% endif %}
+              </td>
+
+              {# ---- Skills (first three; "+N" badge for the rest) ---- #}
+              <td>
+                {% if team.skill_list %}
+                  {% for skill in team.skill_list|slice:":3" %}
+                    <span class="skill-badge">{{ skill }}</span>
+                  {% endfor %}
+                  {% if team.skill_list|length > 3 %}
+                    <span class="skill-badge skill-badge--more">
+                      +{{ team.skill_list|length|add:"-3" }} more
+                    </span>
+                  {% endif %}
+                {% else %}
+                  <span class="text-muted small">—</span>
+                {% endif %}
+              </td>
+
+              {# ---- Dependencies (counts as pills) ---- #}
+              <td>
+                {% if team.upstream_count or team.downstream_count %}
+                  {% if team.upstream_count %}
+                    <span class="dep-pill dep-pill--up"
+                          title="Teams this team depends on">
+                      ↑ {{ team.upstream_count }} upstream
+                    </span>
+                  {% endif %}
+                  {% if team.downstream_count %}
+                    <span class="dep-pill dep-pill--down"
+                          title="Teams that depend on this team">
+                      ↓ {{ team.downstream_count }} downstream
+                    </span>
+                  {% endif %}
+                {% else %}
+                  <span class="text-muted small">none</span>
+                {% endif %}
+              </td>
+
+              {# ---- View column: email, schedule, learn more ---- #}
+              <td class="text-end text-nowrap">
+                {# Email Team — mailto: the team manager if we have an email #}
+                {% if team.team_leader and team.team_leader.email %}
+                  <a class="row-action"
+                     href="mailto:{{ team.team_leader.email }}?subject=Sky Engineering — {{ team.name }}"
+                     title="Email {{ team.name }}"
+                     aria-label="Email {{ team.name }}">
+                    ✉
+                  </a>
+                {% else %}
+                  <span class="row-action is-disabled"
+                        title="No manager email on file"
+                        aria-label="Email unavailable">
+                    ✉
+                  </span>
+                {% endif %}
+
+                {# Schedule a meeting with this team #}
+                <a class="row-action"
+                   href="{% url 'team_schedule_meeting' team.id %}"
+                   title="Schedule a meeting with {{ team.name }}"
+                   aria-label="Schedule a meeting with {{ team.name }}">
+                  📅
+                </a>
+
+                {# Open the full team detail page (skills + deps + members) #}
+                <a href="{% url 'team_detail' team.id %}" class="learn-more ms-2">
+                  learn more
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="text-center text-muted py-4">
+                {% if query %}
+                  No teams match "<strong>{{ query }}</strong>".
+                  Try a different search.
+                {% else %}
+                  No teams have been added yet.
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}

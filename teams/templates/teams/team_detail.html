@@ -1,0 +1,213 @@
+{% extends 'teams/base.html' %}
+{% comment %}
+Author: <YOUR NAME / STUDENT ID HERE>
+Description: Detailed view of a single team. Reached via the "learn more"
+link on the Teams page. Shows manager + contact info, skills as badges,
+upstream/downstream dependencies, and team members. Two action buttons:
+"Email Team" (opens email client via mailto:) and "Schedule Meeting"
+(opens the meeting form for this team).
+{% endcomment %}
+
+{% block title %}{{ team.name }} - Teams - SKY Engineering{% endblock %}
+
+{% block content %}
+  <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+      <a href="{% url 'team_list' %}" class="text-decoration-none small text-muted">
+        ← Back to all teams
+      </a>
+      <h1 class="mb-1 mt-1">{{ team.name }}</h1>
+      <p class="text-muted mb-0">
+        {% if team.department %}{{ team.department.name }} department{% else %}No department{% endif %}
+        {% if team.team_leader %}
+          • Managed by {{ team.team_leader.fname }} {{ team.team_leader.sname }}
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- Action buttons: Email Team & Schedule Meeting -->
+    <div class="d-flex gap-2 flex-wrap">
+      {% if team.team_leader and team.team_leader.email %}
+        <a
+          href="mailto:{{ team.team_leader.email }}?subject=Sky Engineering — {{ team.name }}"
+          class="btn btn-outline-primary"
+        >
+          ✉ Email Team
+        </a>
+      {% else %}
+        <button class="btn btn-outline-secondary" disabled title="No manager email on file">
+          ✉ Email Team
+        </button>
+      {% endif %}
+      <a href="{% url 'team_schedule_meeting' team.id %}" class="btn btn-gradient">
+        📅 Schedule Meeting
+      </a>
+    </div>
+  </div>
+
+  <!-- Overview + Contact -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-8">
+      <section class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h2 class="h5 mb-3">About this team</h2>
+          {% if team.description %}
+            <p class="mb-3">{{ team.description }}</p>
+          {% else %}
+            <p class="text-muted fst-italic mb-3">No description available.</p>
+          {% endif %}
+
+          <h3 class="h6 text-uppercase text-muted mt-4 mb-2">Skills &amp; Tech</h3>
+          {% if skills %}
+            <div class="d-flex flex-wrap gap-2">
+              {% for skill in skills %}
+                <span class="badge skill-badge">{{ skill }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted fst-italic mb-0">No skills listed.</p>
+          {% endif %}
+
+          {% if team.software_owned_and_evolved %}
+            <h3 class="h6 text-uppercase text-muted mt-4 mb-2">Software owned</h3>
+            <p class="mb-0">{{ team.software_owned_and_evolved }}</p>
+          {% endif %}
+        </div>
+      </section>
+    </div>
+
+    <div class="col-lg-4">
+      <section class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h2 class="h5 mb-3">Contact &amp; channels</h2>
+          <dl class="row mb-0 small">
+            <dt class="col-5 text-muted">Manager</dt>
+            <dd class="col-7">
+              {% if team.team_leader %}
+                {{ team.team_leader.fname }} {{ team.team_leader.sname }}
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </dd>
+
+            <dt class="col-5 text-muted">Email</dt>
+            <dd class="col-7 text-break">
+              {% if team.team_leader and team.team_leader.email %}
+                <a href="mailto:{{ team.team_leader.email }}">{{ team.team_leader.email }}</a>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </dd>
+
+            <dt class="col-5 text-muted">Slack</dt>
+            <dd class="col-7 text-break">
+              {% if team.slack %}{{ team.slack }}{% else %}<span class="text-muted">—</span>{% endif %}
+            </dd>
+
+            <dt class="col-5 text-muted">Wiki</dt>
+            <dd class="col-7 text-break">
+              {% if team.wiki %}
+                <a href="{% if not team.wiki|slice:':4' == 'http' %}https://{% endif %}{{ team.wiki }}" target="_blank" rel="noopener">
+                  {{ team.wiki }}
+                </a>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </dd>
+
+            <dt class="col-5 text-muted">Department</dt>
+            <dd class="col-7">
+              {% if team.department %}{{ team.department.name }}{% else %}<span class="text-muted">—</span>{% endif %}
+            </dd>
+          </dl>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Dependencies -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-6">
+      <section class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h2 class="h5 mb-3">
+            <span class="dep-dot dep-dot--up"></span>
+            Upstream dependencies
+          </h2>
+          <p class="text-muted small">
+            Teams or systems this team depends on.
+          </p>
+          {% if upstream_deps %}
+            <ul class="list-unstyled mb-0">
+              {% for dep in upstream_deps %}
+                <li class="dep-row">
+                  <strong>{{ dep.dependency_team_name|default:"Unspecified" }}</strong>
+                  {% if dep.type %}<div class="text-muted small">{{ dep.type }}</div>{% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted fst-italic mb-0">No upstream dependencies recorded.</p>
+          {% endif %}
+        </div>
+      </section>
+    </div>
+
+    <div class="col-md-6">
+      <section class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h2 class="h5 mb-3">
+            <span class="dep-dot dep-dot--down"></span>
+            Downstream dependencies
+          </h2>
+          <p class="text-muted small">
+            Teams or systems that depend on this team.
+          </p>
+          {% if downstream_deps %}
+            <ul class="list-unstyled mb-0">
+              {% for dep in downstream_deps %}
+                <li class="dep-row">
+                  <strong>{{ dep.dependency_team_name|default:"Unspecified" }}</strong>
+                  {% if dep.type %}<div class="text-muted small">{{ dep.type }}</div>{% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted fst-italic mb-0">No downstream dependencies recorded.</p>
+          {% endif %}
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Team members -->
+  <section class="card border-0 shadow-sm">
+    <div class="card-body">
+      <h2 class="h5 mb-3">Team members</h2>
+      {% if members %}
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for m in members %}
+                <tr>
+                  <td>{{ m.fname }} {{ m.sname }}</td>
+                  <td>{{ m.role|default:"—" }}</td>
+                  <td><a href="mailto:{{ m.email }}">{{ m.email }}</a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-muted fst-italic mb-0">No members assigned to this team yet.</p>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}
