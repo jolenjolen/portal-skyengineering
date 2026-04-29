@@ -177,9 +177,6 @@ def profile_view(request):
         sname = request.POST.get('sname', '').strip()
         uname = request.POST.get('uname', '').strip()
         email = request.POST.get('email', '').strip()
-        role = request.POST.get('role', '').strip()
-        team_id = request.POST.get('team')
-        department_name = request.POST.get('department', '').strip()
 
         if not fname or not uname or not email:
             error = 'First name, username and email are required.'
@@ -189,7 +186,6 @@ def profile_view(request):
             user.sname = sname
             user.uname = uname
             user.email = email
-            user.role = role
             user.team = TblTeam.objects.filter(pk=team_id).first() if team_id else None
             user.save(update_fields=['fname', 'sname', 'uname', 'email', 'team'])
             # Update the department name if provided
