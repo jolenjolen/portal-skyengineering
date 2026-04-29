@@ -1,12 +1,91 @@
 """
 Authors:
 Muhammed Hasan (w1689191): Admin access, defined users and admin.
+Jolen Mascarenhas (w1689192): Login/logout, password hashing, session management.
 """
 
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password, check_password
 from core.models import TblUser
+from messaging.models import Message
+
+def contact_view(request):
+    if request.method == 'POST':
+        reason = request.POST.get('reason')
+        full_name = request.POST.get('full_name')
+        username = request.POST.get('username')
+        message_body = request.POST.get('message')
+
+        # Extra fields depending on reason
+        email = request.POST.get('email', '')
+        department = request.POST.get('department', '')
+        page_affected = request.POST.get('page_affected', '')
+        browser = request.POST.get('browser', '')
+
+        reason_labels = {
+            'forgot_password': 'Forgot Password',
+            'enquiry': 'General Enquiry',
+            'system_issue': 'System Issue',
+            'account_locked': 'Account Locked',
+            'other': 'Other',
+        }
+
+        subject = f"[Contact Admin] {reason_labels.get(reason, 'Request')}"
+
+        extra = ''
+        if email:
+            extra += f"Email: {email}\n"
+        if department:
+            extra += f"Department: {department}\n"
+        if page_affected:
+            extra += f"Page Affected: {page_affected}\n"
+        if browser:
+            extra += f"Browser/Device: {browser}\n"
+
+        body = (
+            f"Reason: {reason_labels.get(reason, reason)}\n"
+            f"Full Name: {full_name}\n"
+            f"Username: {username}\n"
+            f"{extra}\n"
+            f"Message:\n{message_body}"
+        )
+
+        # Get guest user as sender (sender cannot be null)
+        try:
+            guest_user = TblUser.objects.get(uname='guest')
+        except TblUser.DoesNotExist:
+            return render(request, 'accounts/contact.html', {
+                'error': 'System error: guest account not configured. Please contact your administrator directly.'
+            })
+
+        # Get all admins
+        admins = TblUser.objects.filter(role='Admin')
+
+        if not admins.exists():
+            return render(request, 'accounts/contact.html', {
+                'error': 'No admins found. Please try again later.'
+            })
+
+        try:
+            for admin in admins:
+                Message.objects.create(
+                    sender=guest_user,
+                    recipient=admin,
+                    subject=subject,
+                    body=body,
+                    status='sent'
+                )
+            admin_count = admins.count()
+            return render(request, 'accounts/contact.html', {
+                'success': f'Your message has been sent. An admin will get back to you shortly.'
+            })
+        except Exception as e:
+            return render(request, 'accounts/contact.html', {
+                'error': f'Something went wrong: {str(e)}'
+            })
+
+    return render(request, 'accounts/contact.html')
 
 # Helper to check if user is logged in
 def is_logged_in(request):
@@ -75,11 +154,6 @@ def signup_view(request):
 # Help page
 def help_view(request):
     return render(request, 'accounts/help.html')
-
-# Contact page
-def contact_view(request):
-    return render(request, 'accounts/contact.html')
-
 
 def privacy_policy(request):
     return render(request, 'accounts/pp.html')

@@ -71,7 +71,7 @@
                             <tbody>
                                 {% for msg in messages %}
                                 <tr class="{% if not msg.is_read %}fw-bold{% endif %}">
-                                    <td>{{ msg.sender.username }}</td>
+                                    <td>{{ msg.sender.uname }}</td>
                                     <td>{{ msg.subject }}</td>
                                     <td>{{ msg.created_at|date:"d M Y H:i" }}</td>
                                     <td><a href="{% url 'view_message' msg.id %}" class="btn btn-sm btn-outline-danger">View</a></td>
