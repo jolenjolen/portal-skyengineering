@@ -1,7 +1,8 @@
 """
 Authors:
 Muhammed Hasan (w1689191): Admin access, defined users and admin.
-Jolen Mascarenhas (w2078969): Login/logout, password hashing, session management.
+Dervish Denaj (w1984059): added profile and changing password. 
+Jolen Mascarenhas (w1689192): Login/logout, password hashing, session management.
 """
 
 from django.shortcuts import render, redirect
@@ -160,3 +161,56 @@ def privacy_policy(request):
 
 def tos(request):
     return render(request, 'accounts/tos.html')
+
+# Profile page
+def profile_view(request):
+    if not is_logged_in(request):
+        return redirect('login')
+    user = current_user(request)
+    error = None
+    success = None
+
+    if request.method == 'POST':
+        # Read submitted form fields
+        fname = request.POST.get('fname', '').strip()
+        sname = request.POST.get('sname', '').strip()
+        uname = request.POST.get('uname', '').strip()
+
+        if not fname or not uname:
+            error = 'First name and username are required.'
+        else:
+            # updates the fields in the database
+            user.fname = fname
+            user.sname = sname
+            user.uname = uname
+            user.save(update_fields=['fname', 'sname', 'uname'])
+            success = 'Profile updated successfully.'
+
+    return render(request, 'accounts/profile.html', {
+        'user': user,
+        'error': error,
+        'success': success,
+        'is_admin_user': is_admin(request),
+    })
+
+# page to change password
+def change_password_view(request):
+    if not is_logged_in(request):
+        return redirect('login')
+    user = current_user(request)
+    error = None
+    success = None
+
+    if request.method == 'POST':
+        new = request.POST.get('new_password', '')
+        user.password = make_password(new)
+        user.save(update_fields=['password'])
+        success = 'Password changed successfully.'
+
+    return render(request, 'accounts/profile.html', {
+        'user': user,
+        'error': error,
+        'success': success,
+        'password_tab': True,
+        'is_admin_user': is_admin(request),
+    })

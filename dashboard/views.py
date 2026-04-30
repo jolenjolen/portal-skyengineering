@@ -9,3 +9,5 @@ def index_view(request):
         "is_admin_user": is_admin(request),
     }
     return render(request, 'dashboard/index.html', context)
+
+    

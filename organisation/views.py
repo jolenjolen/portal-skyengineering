@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count, Q
 from core.models import TblDepartment, TblTeam, TblDependencies, TblUser
+from accounts.views import is_admin
 
 
 def login_required_custom(view_func):
@@ -30,6 +31,7 @@ def organisation_overview(request):
         'total_teams': TblTeam.objects.count(),
         'total_depts': departments.count(),
         'total_members': TblUser.objects.filter(active=True).count(),
+        "is_admin_user": is_admin(request),
     }
     return render(request, 'organisation/overview.html', context)
 
@@ -48,7 +50,7 @@ def department_list(request):
             'teams': teams,
             'team_count': teams.count(),
         })
-    return render(request, 'organisation/department_list.html', {'dept_data': dept_data, 'query': query})
+    return render(request, 'organisation/department_list.html', {'dept_data': dept_data, 'query': query, "is_admin_user": is_admin(request),})
 
 
 @login_required_custom
@@ -69,6 +71,7 @@ def department_detail(request, dept_id):
         'dept': dept,
         'teams_with_members': teams_with_members,
         'team_count': teams.count(),
+        "is_admin_user": is_admin(request),
     })
 
 
@@ -83,7 +86,7 @@ def org_chart(request):
             members = TblUser.objects.filter(team=team)
             team_list.append({'team': team, 'members': members, 'member_count': members.count()})
         chart_data.append({'dept': dept, 'teams': team_list, 'team_count': teams.count()})
-    return render(request, 'organisation/org_chart.html', {'chart_data': chart_data})
+    return render(request, 'organisation/org_chart.html', {'chart_data': chart_data, "is_admin_user": is_admin(request),})
 
 
 @login_required_custom
@@ -103,7 +106,7 @@ def dependencies_view(request):
             continue
         teams_deps.append({'team': team, 'upstream': upstream, 'downstream': downstream})
     return render(request, 'organisation/dependencies.html', {
-        'teams_deps': teams_deps, 'query': query, 'dep_type': dep_type,
+        'teams_deps': teams_deps, 'query': query, 'dep_type': dep_type, "is_admin_user": is_admin(request),
     })
 
 
@@ -119,5 +122,5 @@ def team_type_view(request):
         teams = TblTeam.objects.filter(department=dept)
         grouped.append({'dept': dept, 'teams': teams, 'count': teams.count()})
     return render(request, 'organisation/team_type.html', {
-        'grouped': grouped, 'all_depts': all_depts, 'selected_dept': dept_query,
+        'grouped': grouped, 'all_depts': all_depts, 'selected_dept': dept_query, "is_admin_user": is_admin(request),
     })

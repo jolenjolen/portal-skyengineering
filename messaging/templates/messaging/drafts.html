@@ -1,3 +1,5 @@
+<!-- AUthor: Marta Pikturnaite (w2073431)-->
+
 {% load static %}
 <!doctype html>
 <html lang="en">
@@ -46,7 +48,7 @@
                     <li class="nav-item"><a href="{% url 'inbox' %}" class="nav-link active fw-bold text-danger">Messages</a></li>
                     <li class="nav-item"><a href="{% url 'schedule' %}" class="nav-link">Schedule</a></li>
                     <li class="nav-item"><a href="{% url 'reports_dashboard' %}" class="nav-link">Reports</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link">Profile</a></li>
+                    <li class="nav-item"><a href="{% url 'profile' %}" class="nav-link">Profile</a></li>
                     {% if is_admin_user %}
                     <li class="nav-item"><a href="{% url 'admin_dashboard' %}" class="nav-link">Admin</a></li>
                     {% endif %}
@@ -82,15 +84,20 @@
                                     <td>{{ msg.recipient.uname }}</td>
                                     <td>{{ msg.subject }}</td>
                                     <td>{{ msg.created_at|date:"d M Y H:i" }}</td>
-                                    <td><a href="{% url 'view_message' msg.id %}" class="btn btn-sm btn-outline-danger">View</a></td>
+                                    <td class="d-flex gap-2">
+                                        <a href="{% url 'view_message' msg.id %}" class="btn btn-sm btn-outline-danger">View</a>
+                                        <a href="{% url 'edit_draft' msg.id %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                        <a href="{% url 'send_draft' msg.id %}" class="btn btn-sm btn-danger">Send</a>
+                                    </td>
+                                    
                                 </tr>
                                 {% empty %}
                                 <tr>
                                     <td colspan="4" class="text-center text-muted py-4">No drafts saved</td>
                                 </tr>
                                 {% endfor %}
-                            </tbody>
-                        </table>
+                              </tbody>
+                            </table>    
                     </div>
                 </section>
             </main>
