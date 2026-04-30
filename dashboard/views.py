@@ -1,3 +1,4 @@
+#author: Jolen Mascarenhas (w2078969), Muhammed Hasan (w1689191)
 from django.shortcuts import render
 from core.utils import login_required
 from accounts.views import is_admin

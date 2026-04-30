@@ -1,7 +1,7 @@
 """
 Authors:
 Muhammed Hasan (w1689191): Admin access, defined users and admin.
-Jolen Mascarenhas (w1689192): Login/logout, password hashing, session management.
+Jolen Mascarenhas (w2078969): Login/logout, password hashing, session management.
 """
 
 from django.shortcuts import render, redirect

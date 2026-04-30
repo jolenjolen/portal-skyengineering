@@ -1,5 +1,5 @@
 """
-Authors: 
+Authors: Jolen Mascarenhas (w2078969): Login/logout, password hashing, session management, reports and adminpanel.
 Muhammed Hasan(w1689191): reports and adminpanel
 
 URL configuration for portal project.

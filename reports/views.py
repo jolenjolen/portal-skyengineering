@@ -1,5 +1,5 @@
 """
-Authors: Muhammed Hasan (w1689191)
+Authors: Muhammed Hasan (w1689191), jolen Mascarenhas (w2078969)
 Decription: Create reports for display
 """
 

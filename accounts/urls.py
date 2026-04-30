@@ -1,3 +1,4 @@
+# Author: jolen Mascarenhas (w2078969)
 from django.urls import path
 from .views import login_view, signup_view, help_view, contact_view, reset_password_view, privacy_policy, tos, logout_view
 

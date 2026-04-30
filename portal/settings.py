@@ -1,3 +1,4 @@
+#authors: Jolen Mascarenhas (w2078969), Muhammed Hasan (w1689191)
 """
 Django settings for portal project.
 
